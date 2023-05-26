@@ -20,4 +20,4 @@ jobs:
         distribution: 'temurin'
         
     - name: Build with Gradle
-      run: ./gradlew jar
+      run: ./gradlew shadowJar

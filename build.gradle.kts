@@ -1,5 +1,6 @@
 plugins {
     kotlin("jvm") version "1.8.21"
+    id("com.github.johnrengelman.shadow") version "8.1.1"
     application
 }
 
@@ -25,13 +26,6 @@ dependencies {
 
 kotlin {
     jvmToolchain(17)
-}
-
-tasks.jar {
-    manifest.attributes["Main-Class"] = "com.rsplwe.esurfing.DialerApp"
-    val deps = configurations.runtimeClasspath.get().map(::zipTree)
-    from(deps)
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
 application {
