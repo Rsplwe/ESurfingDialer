@@ -1,7 +1,7 @@
 # ESurfingDialer
 [![GitHub License](https://img.shields.io/github/license/Rsplwe/ESurfingDialer?style=flat-square)](https://github.com/Rsplwe/ESurfingDialer/blob/main/LICENSE)
 
-广东天翼电信校园（ZSM验证）登入认证客户端
+广东电信天翼校园（ZSM验证）登入认证客户端
 
 ### 使用
 ```bash
