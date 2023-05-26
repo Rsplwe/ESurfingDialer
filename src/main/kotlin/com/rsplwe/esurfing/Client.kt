@@ -11,9 +11,7 @@ import org.apache.log4j.Logger
 
 class Client(private val options: Options) {
 
-
     private val logger: Logger = Logger.getLogger(Client::class.java)
-    private var isRunning = false
     private var session: Session? = null
     private var keepUrl = ""
     private var termUrl = ""
@@ -22,9 +20,8 @@ class Client(private val options: Options) {
     @Volatile
     var tick: Long = 0
 
-    init {
-        isRunning = true
-    }
+    @Volatile
+    private var isRunning = false
 
     fun loop() {
         val networkStatus = checkConnectivity()
@@ -95,11 +92,12 @@ class Client(private val options: Options) {
         Runtime.getRuntime().addShutdownHook(object : Thread() {
             override fun run() {
                 try {
-                    isRunning = false
-                    logger.info("Send Term Packet")
-                    term(ticket)
-                    session!!.free()
-                    println("Shutting down ...")
+                    if (isRunning) {
+                        isRunning = false
+                        term(ticket)
+                        session!!.free()
+                    }
+                    println("Shutting down...")
                 } catch (e: InterruptedException) {
                     currentThread().interrupt()
                     e.printStackTrace()
