@@ -3,7 +3,7 @@ package com.rsplwe.esurfing.hook
 import com.github.unidbg.AndroidEmulator
 import com.github.unidbg.Emulator
 import com.github.unidbg.arm.HookStatus
-import com.github.unidbg.arm.backend.DynarmicFactory
+import com.github.unidbg.arm.backend.Unicorn2Factory
 import com.github.unidbg.hook.HookContext
 import com.github.unidbg.hook.ReplaceCallback
 import com.github.unidbg.hook.hookzz.HookZz
@@ -24,7 +24,7 @@ class AndroidMock {
     private val jniMethod: DvmClass
     private val emulator: AndroidEmulator = AndroidEmulatorBuilder
         .for32Bit()
-        .addBackendFactory(DynarmicFactory(false))
+        .addBackendFactory(Unicorn2Factory(false))
         .setProcessName(Constants.PACKAGE_ID)
         .build()
 
