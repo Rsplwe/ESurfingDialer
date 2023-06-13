@@ -15,7 +15,6 @@ import com.rsplwe.esurfing.Constants
 import org.apache.log4j.Logger
 import unicorn.ArmConst
 import java.nio.charset.StandardCharsets
-import java.util.function.Consumer
 
 class AndroidMock {
 
@@ -46,19 +45,16 @@ class AndroidMock {
         hook.replace(libraryLibC.module.findSymbolByName("strcmp").address, object : ReplaceCallback() {
             override fun onCall(emulator: Emulator<*>?, context: HookContext?, originFunction: Long): HookStatus {
                 val arg2 = context!!.getPointerArg(1).getString(0)
-                val filter = listOf("ipv4", "local-time")
+                val key = "ipv4"
 
-                filter.forEach(Consumer { key: String ->
-                    if (arg2.indexOf(key) == 0) {
-                        if (!cache.containsKey(key)) {
-                            val fakeInputBlock = emulator!!.memory.malloc(key.length, true)
-                            fakeInputBlock.pointer.write(key.toByteArray(StandardCharsets.US_ASCII))
-                            cache[key] = fakeInputBlock
-                        }
-                        emulator!!.backend.reg_write(ArmConst.UC_ARM_REG_R0, cache[key]!!.pointer.peer)
+                if (arg2.indexOf(key) == 0 ){
+                    if (!cache.containsKey(key)) {
+                        val fakeInputBlock = emulator!!.memory.malloc(key.length, true)
+                        fakeInputBlock.pointer.write(key.toByteArray(StandardCharsets.US_ASCII))
+                        cache[key] = fakeInputBlock
                     }
-                })
-
+                    emulator!!.backend.reg_write(ArmConst.UC_ARM_REG_R0, cache[key]!!.pointer.peer)
+                }
                 return HookStatus.RET(emulator, originFunction)
             }
         })
