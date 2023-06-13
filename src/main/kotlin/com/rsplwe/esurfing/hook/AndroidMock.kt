@@ -35,14 +35,11 @@ class AndroidMock {
         vm.setJni(ESurfingJni())
         vm.setVerbose(false)
 
-        val libCRaw = this::class.java.classLoader.getResource("libc.so")!!.readBytes()
         val libRaw = this::class.java.classLoader.getResource("libdaproxy.so")!!.readBytes()
-
-        val libraryLibC = vm.loadLibrary("c", libCRaw, true)
         val library = vm.loadLibrary("daproxy", libRaw, true)
 
         val hook = HookZz.getInstance(emulator)
-        hook.replace(libraryLibC.module.findSymbolByName("strcmp").address, object : ReplaceCallback() {
+        hook.replace(library.module.findSymbolByName("strcmp").address, object : ReplaceCallback() {
             override fun onCall(emulator: Emulator<*>?, context: HookContext?, originFunction: Long): HookStatus {
                 val arg2 = context!!.getPointerArg(1).getString(0)
                 val key = "ipv4"
@@ -50,7 +47,7 @@ class AndroidMock {
                 if (arg2.indexOf(key) == 0 ){
                     if (!cache.containsKey(key)) {
                         val fakeInputBlock = emulator!!.memory.malloc(key.length, true)
-                        fakeInputBlock.pointer.write(key.toByteArray(StandardCharsets.US_ASCII))
+                        fakeInputBlock.pointer.write(key.toByteArray(StandardCharsets.UTF_8))
                         cache[key] = fakeInputBlock
                     }
                     emulator!!.backend.reg_write(ArmConst.UC_ARM_REG_R0, cache[key]!!.pointer.peer)
