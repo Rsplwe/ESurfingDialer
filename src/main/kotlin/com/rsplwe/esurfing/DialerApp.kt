@@ -10,6 +10,10 @@ object DialerApp {
     private val logger: Logger = Logger.getLogger(DialerApp::class.java)
     @JvmStatic
     fun main(args: Array<String>) {
+        // root directory
+        if (!States.rootDir.exists()) States.rootDir.mkdirs()
+        if (States.rootDir.isFile) throw IllegalArgumentException("rootDir must be directory: " + States.rootDir)
+
         val options = Options()
         val loginUser = Option.builder("u").longOpt("user")
             .argName("user")

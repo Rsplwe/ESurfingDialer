@@ -1,9 +1,12 @@
 package com.rsplwe.esurfing
 
 import com.rsplwe.esurfing.utils.MacAddress
+import java.io.File
 import java.util.*
 
 object States {
+
+    val rootDir = File("target")
 
     val clientId = UUID.randomUUID().toString().lowercase()
     var algoId = "00000000-0000-0000-0000-000000000000"

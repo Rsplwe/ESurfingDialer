@@ -12,6 +12,7 @@ import com.github.unidbg.linux.android.AndroidResolver
 import com.github.unidbg.linux.android.dvm.DvmClass
 import com.github.unidbg.memory.MemoryBlock
 import com.rsplwe.esurfing.Constants
+import com.rsplwe.esurfing.States
 import org.apache.log4j.Logger
 import unicorn.ArmConst
 import java.nio.charset.StandardCharsets
@@ -23,6 +24,7 @@ class AndroidMock {
     private val jniMethod: DvmClass
     private val emulator: AndroidEmulator = AndroidEmulatorBuilder
         .for32Bit()
+        .setRootDir(States.rootDir)
         .addBackendFactory(Unicorn2Factory(false))
         .setProcessName(Constants.PACKAGE_ID)
         .build()

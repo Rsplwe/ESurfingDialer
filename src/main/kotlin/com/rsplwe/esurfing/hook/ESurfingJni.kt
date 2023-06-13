@@ -2,6 +2,7 @@ package com.rsplwe.esurfing.hook
 
 import com.github.unidbg.linux.android.dvm.*
 import com.rsplwe.esurfing.Constants
+import com.rsplwe.esurfing.States
 import java.io.File
 
 class ESurfingJni : AbstractJni() {
@@ -14,7 +15,7 @@ class ESurfingJni : AbstractJni() {
     ): DvmObject<*> {
         when (signature) {
             "android/content/Context->getFilesDir()Ljava/io/File;" -> {
-                return vm!!.resolveClass("java/io/File").newObject(File("target"))
+                return vm!!.resolveClass("java/io/File").newObject(States.rootDir)
             }
             "java/io/File->getAbsolutePath()Ljava/lang/String;" -> {
                 val file = dvmObject!!.value as File
