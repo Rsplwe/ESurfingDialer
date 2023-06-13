@@ -44,7 +44,7 @@ class AndroidMock {
                 val arg2 = context!!.getPointerArg(1).getString(0)
                 val key = "ipv4"
 
-                if (arg2.indexOf(key) == 0 ){
+                if (arg2.indexOf(key) == 0){
                     if (!cache.containsKey(key)) {
                         val fakeInputBlock = emulator!!.memory.malloc(key.length, true)
                         fakeInputBlock.pointer.write(key.toByteArray(StandardCharsets.UTF_8))
