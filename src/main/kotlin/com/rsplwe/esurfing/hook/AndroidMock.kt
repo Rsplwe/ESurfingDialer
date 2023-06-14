@@ -3,6 +3,7 @@ package com.rsplwe.esurfing.hook
 import com.github.unidbg.AndroidEmulator
 import com.github.unidbg.Emulator
 import com.github.unidbg.arm.HookStatus
+import com.github.unidbg.arm.backend.KvmFactory
 import com.github.unidbg.arm.backend.Unicorn2Factory
 import com.github.unidbg.hook.HookContext
 import com.github.unidbg.hook.ReplaceCallback
@@ -25,7 +26,8 @@ class AndroidMock {
     private val emulator: AndroidEmulator = AndroidEmulatorBuilder
         .for32Bit()
         .setRootDir(States.rootDir)
-        .addBackendFactory(Unicorn2Factory(false))
+        .addBackendFactory(Unicorn2Factory(true))
+        .addBackendFactory(KvmFactory(true))
         .setProcessName(Constants.PACKAGE_ID)
         .build()
 
