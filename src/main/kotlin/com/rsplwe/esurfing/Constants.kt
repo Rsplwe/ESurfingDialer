@@ -2,6 +2,8 @@ package com.rsplwe.esurfing
 
 object Constants {
 
+    const val DEBUG = false
+
     const val PACKAGE_ID = "com.cndatacom.campus.cdccportalgd"
     const val USER_AGENT = "CCTP/Android8_vpn/2082"
     const val REQUEST_ACCEPT = "text/html,text/xml,application/xhtml+xml,application/x-javascript,*/*"

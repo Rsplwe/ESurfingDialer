@@ -12,7 +12,7 @@ import org.apache.log4j.Logger
 class Client(private val options: Options) {
 
     private val logger: Logger = Logger.getLogger(Client::class.java)
-    private var session: Session? = null
+    private lateinit var session: Session
     private var keepUrl = ""
     private var termUrl = ""
     private var keepRetry = ""
@@ -55,9 +55,15 @@ class Client(private val options: Options) {
         }
 
         initSession()
-        States.algoId = session!!.getAlgoId()
+        if (session.getSessionId() == 0.toLong()) {
+            logger.error("Failed to initialize session.")
+            return
+        } else {
+            logger.info("Session ID: ${session.getSessionId()}")
+        }
+
         logger.info("Algo ID: ${States.algoId}")
-        logger.info("Key: ${session!!.getKey()}")
+        logger.info("Key: ${session.getKey()}")
 
         val ticket = getTicket()
         logger.info("Ticket: $ticket")
@@ -95,7 +101,7 @@ class Client(private val options: Options) {
                     if (isRunning) {
                         isRunning = false
                         term(ticket)
-                        session!!.free()
+                        session.free()
                     }
                     println("Shutting down...")
                 } catch (e: InterruptedException) {
@@ -109,7 +115,7 @@ class Client(private val options: Options) {
     }
 
     private fun initSession() {
-        when (val result = post(ticketUrl, "00000000-0000-0000-0000-000000000000")) {
+        when (val result = post(ticketUrl, States.algoId)) {
             is NetResult.Success -> {
                 session = Session(result.data.bytes())
             }
@@ -139,9 +145,9 @@ class Client(private val options: Options) {
                 </sysinfo>
             </request>
         """.trimIndent()
-        when (val result = post(ticketUrl, session!!.encrypt(payload))) {
+        when (val result = post(ticketUrl, session.encrypt(payload))) {
             is NetResult.Success -> {
-                val data = session!!.decrypt(result.data.string())
+                val data = session.decrypt(result.data.string())
                 return data.substringAfter("<ticket>").substringBefore("</ticket>")
             }
 
@@ -163,9 +169,9 @@ class Client(private val options: Options) {
                 <passwd>${options.loginPassword}</passwd>
             </request>
         """.trimIndent()
-        when (val result = post(Constants.AUTH_URL, session!!.encrypt(payload))) {
+        when (val result = post(Constants.AUTH_URL, session.encrypt(payload))) {
             is NetResult.Success -> {
-                val data = session!!.decrypt(result.data.string())
+                val data = session.decrypt(result.data.string())
                 keepUrl = data.substringAfter("<keep-url><![CDATA[").substringBefore("]]></keep-url>")
                 termUrl = data.substringAfter("<term-url><![CDATA[").substringBefore("]]></term-url>")
                 keepRetry = data.substringAfter("<keep-retry>").substringBefore("</keep-retry>")
@@ -201,9 +207,9 @@ class Client(private val options: Options) {
                 </sysinfo>
             </request>
         """.trimIndent()
-        when (val result = post(keepUrl, session!!.encrypt(payload))) {
+        when (val result = post(keepUrl, session.encrypt(payload))) {
             is NetResult.Success -> {
-                val data = session!!.decrypt(result.data.string())
+                val data = session.decrypt(result.data.string())
                 keepRetry = data.substringAfter("<interval>").substringBefore("</interval>")
             }
 
@@ -233,7 +239,7 @@ class Client(private val options: Options) {
                 </sysinfo>
             </request>
         """.trimIndent()
-        when (val result = post(termUrl, session!!.encrypt(payload))) {
+        when (val result = post(termUrl, session.encrypt(payload))) {
             is NetResult.Success -> {}
             is NetResult.Error -> {
                 error("Error: ${result.exception}")

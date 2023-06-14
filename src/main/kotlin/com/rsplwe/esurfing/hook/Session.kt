@@ -3,6 +3,7 @@ package com.rsplwe.esurfing.hook
 import com.github.unidbg.AndroidEmulator
 import com.github.unidbg.linux.android.dvm.DvmClass
 import com.github.unidbg.linux.android.dvm.DvmObject
+import com.rsplwe.esurfing.States
 import org.apache.log4j.Logger
 import java.util.*
 
@@ -16,17 +17,27 @@ class Session(zsm: ByteArray) {
     
     init {
         logger.info("Initializing Session...")
-        sessionId = method.callStaticJniMethodLong(emulator, "load([B)J", zsm)
+        sessionId = this.load(zsm)
         clientId = UUID.randomUUID().toString().lowercase()
+        States.algoId = this.getAlgoId()
     }
+
+    private fun load(zsm: ByteArray): Long {
+        return method.callStaticJniMethodLong(emulator, "load([B)J", zsm)
+    }
+
     fun decrypt(hex: String): String {
-        val r: DvmObject<*> = method.callStaticJniMethodObject(emulator, "dec(J[B)[B", sessionId, hex.toByteArray(charset("UTF-8")))
+        val r: DvmObject<*> = method.callStaticJniMethodObject(emulator, "dec(J[B)[B", sessionId, hex.toByteArray(Charsets.UTF_8))
         return String((r.value as ByteArray))
     }
 
-    fun getAlgoId(): String {
+    private fun getAlgoId(): String {
         val r: DvmObject<*> = method.callStaticJniMethodObject(emulator, "aid(J)Ljava/lang/String;", sessionId)
         return r.value as String
+    }
+
+    fun getSessionId(): Long {
+        return this.sessionId
     }
 
     fun getKey(): String {
@@ -35,14 +46,11 @@ class Session(zsm: ByteArray) {
     }
 
     fun encrypt(hex: String): String {
-        val r: DvmObject<*> = method.callStaticJniMethodObject(emulator, "enc(J[B)[B", sessionId, hex.toByteArray(charset("UTF-8")))
+        val r: DvmObject<*> = method.callStaticJniMethodObject(emulator, "enc(J[B)[B", sessionId, hex.toByteArray(Charsets.UTF_8))
         return String((r.value as ByteArray))
     }
 
     fun free() {
         method.callStaticJniMethodObject<DvmObject<*>>(emulator, "free(J)V", sessionId)
     }
-    
-    
-
 }

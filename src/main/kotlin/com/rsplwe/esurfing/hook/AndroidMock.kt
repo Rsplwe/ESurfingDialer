@@ -35,7 +35,7 @@ class AndroidMock {
 
         val vm = emulator.createDalvikVM()
         vm.setJni(ESurfingJni())
-        vm.setVerbose(false)
+        vm.setVerbose(Constants.DEBUG)
 
         val libRaw = this::class.java.classLoader.getResource("libdaproxy.so")!!.readBytes()
         val library = vm.loadLibrary("daproxy", libRaw, true)
