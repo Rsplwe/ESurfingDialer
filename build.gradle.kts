@@ -21,7 +21,6 @@ dependencies {
     implementation("com.squareup.okhttp3:okhttp:4.10.0")
     implementation("com.github.yescallop:fluent-uri:d8e12f23af")
     implementation("commons-cli:commons-cli:1.5.0")
-    implementation("commons-codec:commons-codec:1.15")
 }
 
 kotlin {

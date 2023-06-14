@@ -1,6 +1,5 @@
 package com.rsplwe.esurfing
 
-import com.rsplwe.esurfing.States.ticketUrl
 import com.rsplwe.esurfing.hook.Session
 import com.rsplwe.esurfing.network.NetResult
 import com.rsplwe.esurfing.network.post
@@ -87,6 +86,7 @@ class Client(private val options: Options) {
                         if ((System.currentTimeMillis() - tick) >= (keepRetry.toLong() * 1000)) {
                             logger.info("Send Keep Packet")
                             heartbeat(ticket)
+                            logger.info("Next Retry: $keepRetry")
                             tick = System.currentTimeMillis()
                         }
                     }
@@ -115,7 +115,7 @@ class Client(private val options: Options) {
     }
 
     private fun initSession() {
-        when (val result = post(ticketUrl, States.algoId)) {
+        when (val result = post(States.ticketUrl, States.algoId)) {
             is NetResult.Success -> {
                 session = Session(result.data.bytes())
             }
@@ -145,7 +145,7 @@ class Client(private val options: Options) {
                 </sysinfo>
             </request>
         """.trimIndent()
-        when (val result = post(ticketUrl, session.encrypt(payload))) {
+        when (val result = post(States.ticketUrl, session.encrypt(payload))) {
             is NetResult.Success -> {
                 val data = session.decrypt(result.data.string())
                 return data.substringAfter("<ticket>").substringBefore("</ticket>")
