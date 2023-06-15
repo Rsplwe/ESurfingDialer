@@ -138,11 +138,6 @@ class Client(private val options: Options) {
                 <ipv6></ipv6>
                 <mac>${States.macAddress}</mac>
                 <ostag>Xiaomi 6</ostag>
-                <gwip></gwip>
-                <sysinfo>
-                    <sysname>Linux</sysname>
-                    <ifname>wlan0,${States.userIp}</ifname>
-                </sysinfo>
             </request>
         """.trimIndent()
         when (val result = post(States.ticketUrl, session.encrypt(payload))) {
@@ -200,11 +195,6 @@ class Client(private val options: Options) {
                 <ipv6></ipv6>
                 <mac>${States.macAddress}</mac>
                 <ostag>Xiaomi 6</ostag>
-                <gwip></gwip>
-                <sysinfo>
-                    <sysname>Linux</sysname>
-                    <ifname>wlan0,${States.userIp}</ifname>
-                </sysinfo>
             </request>
         """.trimIndent()
         when (val result = post(keepUrl, session.encrypt(payload))) {
@@ -232,11 +222,6 @@ class Client(private val options: Options) {
                 <ipv6></ipv6>
                 <mac>${States.macAddress}</mac>
                 <ostag>Xiaomi 6</ostag>
-                <gwip></gwip>
-                <sysinfo>
-                    <sysname>Linux</sysname>
-                    <ifname>wlan0,${States.userIp}</ifname>
-                </sysinfo>
             </request>
         """.trimIndent()
         when (val result = post(termUrl, session.encrypt(payload))) {
