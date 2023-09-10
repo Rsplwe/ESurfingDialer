@@ -78,11 +78,10 @@ object DialerApp {
                 }
             }
         }
-        networkCheck.start()
+
 
 
         val client = Client(Options(cmd.getOptionValue("user"), cmd.getOptionValue("password")))
-        Thread(client).start()
 
         Runtime.getRuntime().addShutdownHook(object : Thread() {
             override fun run() {
@@ -100,6 +99,9 @@ object DialerApp {
                 }
             }
         })
+
+        Thread(client).start()
+        networkCheck.start()
     }
 
 }
