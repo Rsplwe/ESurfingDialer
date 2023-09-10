@@ -1,8 +1,10 @@
 package com.rsplwe.esurfing
 
+import com.rsplwe.esurfing.utils.ConnectivityStatus
 import com.rsplwe.esurfing.utils.MacAddress
 import java.io.File
 import java.util.*
+
 
 object States {
 
@@ -13,6 +15,14 @@ object States {
     val macAddress = MacAddress.random()
     var userIp = ""
     var acIp = ""
+    var ticket = ""
+
+    @get:Synchronized
+    var networkStatus: ConnectivityStatus = ConnectivityStatus.DEFAULT
+
+    @Volatile
+    var isRunning = true
+
     val ticketUrl: String
         get() {
             return "${Constants.BASE_URL}/ticket.cgi?wlanuserip=${userIp}&wlanacip=${acIp}&portal_node=${Constants.PORTAL_NODE}"

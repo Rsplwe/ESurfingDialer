@@ -1,117 +1,69 @@
 package com.rsplwe.esurfing
 
+import com.rsplwe.esurfing.States.isRunning
+import com.rsplwe.esurfing.States.ticket
 import com.rsplwe.esurfing.hook.Session
 import com.rsplwe.esurfing.network.NetResult
 import com.rsplwe.esurfing.network.post
 import com.rsplwe.esurfing.utils.ConnectivityStatus.*
-import com.rsplwe.esurfing.utils.checkConnectivity
 import com.rsplwe.esurfing.utils.getTime
 import org.apache.log4j.Logger
+import java.lang.Thread.sleep
 
-class Client(private val options: Options) {
+class Client(private val options: Options):Runnable {
 
     private val logger: Logger = Logger.getLogger(Client::class.java)
-    private lateinit var session: Session
     private var keepUrl = ""
     private var termUrl = ""
     private var keepRetry = ""
 
+    var session: Session? = null
+
     @Volatile
     var tick: Long = 0
 
-    @Volatile
-    private var isRunning = false
-
-    fun loop() {
-        val networkStatus = checkConnectivity()
-        when (networkStatus.status) {
-            SUCCESS -> {
-                logger.info("The network has been connected.")
-                return
-            }
-
-            IS_REDIRECTS_NOT_FOUND_IP -> {
-                logger.error("No parameter detected in url.")
-                return
-            }
-
-            IS_REDIRECTS_FOUND_IP -> {
-                logger.info("Client IP: ${networkStatus.userIp}")
-                logger.info("AC IP: ${networkStatus.acIp}")
-
-                if (networkStatus.userIp.isNullOrEmpty() or networkStatus.acIp.isNullOrEmpty()) {
-                    logger.error("The necessary parameters are empty.")
-                    return
-                }
-                States.userIp = networkStatus.userIp!!
-                States.acIp = networkStatus.acIp!!
-            }
-
-            REQUEST_ERROR -> {
-                logger.error("Request Error: ${networkStatus.message}")
-                return
-            }
-        }
-
-        initSession()
-        if (session.getSessionId() == 0.toLong()) {
-            logger.error("Failed to initialize session.")
-            return
-        } else {
-            logger.info("Session ID: ${session.getSessionId()}")
-        }
-
-        logger.info("Algo ID: ${States.algoId}")
-        logger.info("Key: ${session.getKey()}")
-
-        val ticket = getTicket()
-        logger.info("Ticket: $ticket")
-
-        login(ticket)
-
-        if (keepUrl.isEmpty()) {
-            logger.error("KeepUrl is empty.")
-            return
-        }
-
-        tick = System.currentTimeMillis()
-        isRunning = true
-
-        val loop = object : Thread() {
-            override fun run() {
-                while (true) {
-                    if (!isRunning) {
-                        break
-                    } else {
-                        if ((System.currentTimeMillis() - tick) >= (keepRetry.toLong() * 1000)) {
-                            logger.info("Send Keep Packet")
-                            heartbeat(ticket)
-                            logger.info("Next Retry: $keepRetry")
-                            tick = System.currentTimeMillis()
-                        }
+    override fun run() {
+        while (isRunning) {
+            if (States.networkStatus == DEFAULT) logger.info("wait network check...")
+            if (States.networkStatus == SUCCESS) {
+                if (session != null) {
+                    tick = System.currentTimeMillis()
+                    if ((System.currentTimeMillis() - tick) >= (keepRetry.toLong() * 1000)) {
+                        logger.info("Send Keep Packet")
+                        heartbeat(ticket)
+                        logger.info("Next Retry: $keepRetry")
+                        tick = System.currentTimeMillis()
                     }
-                    sleep(200)
                 }
             }
+            if (States.networkStatus == IS_REDIRECTS_NOT_FOUND_IP) continue
+            if (States.networkStatus == REQUEST_ERROR) {
+                sleep(5000)
+                continue
+            }
+            if (States.networkStatus == IS_REDIRECTS_FOUND_IP) {
+                session?.free()
+                States.algoId = "00000000-0000-0000-0000-000000000000"
+                initSession()
+                if ((session?.getSessionId() ?: 0) == 0.toLong()) {
+                    logger.error("Failed to initialize session.")
+                    continue
+                } else {
+                    logger.info("Session ID: ${session?.getSessionId()}")
+                }
+
+                ticket = getTicket()
+                logger.info("Ticket: $ticket")
+                login()
+
+                if (keepUrl.isEmpty()) {
+                    logger.error("KeepUrl is empty.")
+                    session?.free()
+                    continue
+                }
+            }
+            sleep(200)
         }
-
-        Runtime.getRuntime().addShutdownHook(object : Thread() {
-            override fun run() {
-                try {
-                    if (isRunning) {
-                        isRunning = false
-                        term(ticket)
-                        session.free()
-                    }
-                    println("Shutting down...")
-                } catch (e: InterruptedException) {
-                    currentThread().interrupt()
-                    e.printStackTrace()
-                }
-            }
-        })
-
-        loop.start()
     }
 
     private fun initSession() {
@@ -140,9 +92,9 @@ class Client(private val options: Options) {
                 <ostag>Xiaomi 6</ostag>
             </request>
         """.trimIndent()
-        when (val result = post(States.ticketUrl, session.encrypt(payload))) {
+        when (val result = post(States.ticketUrl, session!!.encrypt(payload))) {
             is NetResult.Success -> {
-                val data = session.decrypt(result.data.string())
+                val data = session!!.decrypt(result.data.string())
                 return data.substringAfter("<ticket>").substringBefore("</ticket>")
             }
 
@@ -152,7 +104,7 @@ class Client(private val options: Options) {
         }
     }
 
-    private fun login(ticket: String) {
+    private fun login() {
         val payload = """
             <?xml version="1.0" encoding="utf-8"?>
             <request>
@@ -164,9 +116,9 @@ class Client(private val options: Options) {
                 <passwd>${options.loginPassword}</passwd>
             </request>
         """.trimIndent()
-        when (val result = post(Constants.AUTH_URL, session.encrypt(payload))) {
+        when (val result = post(Constants.AUTH_URL, session!!.encrypt(payload))) {
             is NetResult.Success -> {
-                val data = session.decrypt(result.data.string())
+                val data = session!!.decrypt(result.data.string())
                 keepUrl = data.substringAfter("<keep-url><![CDATA[").substringBefore("]]></keep-url>")
                 termUrl = data.substringAfter("<term-url><![CDATA[").substringBefore("]]></term-url>")
                 keepRetry = data.substringAfter("<keep-retry>").substringBefore("</keep-retry>")
@@ -197,9 +149,9 @@ class Client(private val options: Options) {
                 <ostag>Xiaomi 6</ostag>
             </request>
         """.trimIndent()
-        when (val result = post(keepUrl, session.encrypt(payload))) {
+        when (val result = post(keepUrl, session!!.encrypt(payload))) {
             is NetResult.Success -> {
-                val data = session.decrypt(result.data.string())
+                val data = session!!.decrypt(result.data.string())
                 keepRetry = data.substringAfter("<interval>").substringBefore("</interval>")
             }
 
@@ -209,7 +161,7 @@ class Client(private val options: Options) {
         }
     }
 
-    private fun term(ticket: String) {
+    fun term() {
         val payload = """
             <?xml version="1.0" encoding="utf-8"?>
             <request>
@@ -224,12 +176,11 @@ class Client(private val options: Options) {
                 <ostag>Xiaomi 6</ostag>
             </request>
         """.trimIndent()
-        when (val result = post(termUrl, session.encrypt(payload))) {
+        when (val result = post(termUrl, session!!.encrypt(payload))) {
             is NetResult.Success -> {}
             is NetResult.Error -> {
                 error("Error: ${result.exception}")
             }
         }
     }
-
 }

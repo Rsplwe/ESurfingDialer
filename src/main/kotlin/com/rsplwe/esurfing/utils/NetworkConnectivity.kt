@@ -10,6 +10,7 @@ enum class ConnectivityStatus {
     IS_REDIRECTS_NOT_FOUND_IP,
     IS_REDIRECTS_FOUND_IP,
     REQUEST_ERROR,
+    DEFAULT
 }
 
 data class NetworkConnectivityResult(
@@ -42,11 +43,15 @@ fun checkConnectivity(): NetworkConnectivityResult {
                     val userIp = uri.queryParameters()["wlanuserip"]?.first()
                     val acIp = uri.queryParameters()["wlanacip"]?.first()
 
-                    NetworkConnectivityResult(
-                        status = ConnectivityStatus.IS_REDIRECTS_FOUND_IP,
-                        userIp = userIp,
-                        acIp = acIp
-                    )
+                    if (userIp.isNullOrEmpty() or acIp.isNullOrEmpty()) {
+                        NetworkConnectivityResult(status = ConnectivityStatus.IS_REDIRECTS_NOT_FOUND_IP)
+                    }else{
+                        NetworkConnectivityResult(
+                            status = ConnectivityStatus.IS_REDIRECTS_FOUND_IP,
+                            userIp = userIp,
+                            acIp = acIp
+                        )
+                    }
                 } else {
                     NetworkConnectivityResult(status = ConnectivityStatus.IS_REDIRECTS_NOT_FOUND_IP)
                 }

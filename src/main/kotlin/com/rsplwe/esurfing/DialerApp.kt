@@ -1,5 +1,8 @@
 package com.rsplwe.esurfing
 
+import com.rsplwe.esurfing.States.isRunning
+import com.rsplwe.esurfing.utils.ConnectivityStatus
+import com.rsplwe.esurfing.utils.checkConnectivity
 import org.apache.commons.cli.*
 import org.apache.commons.cli.Options
 import org.apache.log4j.Logger
@@ -8,6 +11,7 @@ import kotlin.system.exitProcess
 object DialerApp {
 
     private val logger: Logger = Logger.getLogger(DialerApp::class.java)
+
     @JvmStatic
     fun main(args: Array<String>) {
         // root directory
@@ -37,11 +41,65 @@ object DialerApp {
             cmd = parser.parse(options, args)
         } catch (e: ParseException) {
             logger.error(e.message)
-            helper.printHelp("ESurfingDialer",options)
+            helper.printHelp("ESurfingDialer", options)
             exitProcess(1)
         }
 
-        Client(Options(cmd.getOptionValue("user"), cmd.getOptionValue("password"))).loop()
+        val networkCheck = object : Thread() {
+            override fun run() {
+                while (isRunning) {
+                    val networkStatus = checkConnectivity()
+                    States.networkStatus = networkStatus.status
+
+                    when (networkStatus.status) {
+                        ConnectivityStatus.SUCCESS -> {
+                            logger.info("The network has been connected.")
+                        }
+
+                        ConnectivityStatus.IS_REDIRECTS_NOT_FOUND_IP -> {
+                            logger.error("No parameter detected in url.")
+                        }
+
+                        ConnectivityStatus.IS_REDIRECTS_FOUND_IP -> {
+                            logger.info("Client IP: ${networkStatus.userIp}")
+                            logger.info("AC IP: ${networkStatus.acIp}")
+
+                            States.userIp = networkStatus.userIp!!
+                            States.acIp = networkStatus.acIp!!
+                        }
+
+                        ConnectivityStatus.REQUEST_ERROR -> {
+                            logger.error("Request Error: ${networkStatus.message}")
+                        }
+
+                        ConnectivityStatus.DEFAULT -> {}
+                    }
+                    sleep(1000)
+                }
+            }
+        }
+        networkCheck.start()
+
+
+        val client = Client(Options(cmd.getOptionValue("user"), cmd.getOptionValue("password")))
+        Thread(client).start()
+
+        Runtime.getRuntime().addShutdownHook(object : Thread() {
+            override fun run() {
+                try {
+                    if (isRunning) {
+                        isRunning = false
+                    }
+                    if (client.session != null) {
+                        client.term()
+                    }
+                    println("Shutting down...")
+                } catch (e: InterruptedException) {
+                    currentThread().interrupt()
+                    e.printStackTrace()
+                }
+            }
+        })
     }
 
 }
