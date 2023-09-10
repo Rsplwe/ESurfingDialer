@@ -59,6 +59,7 @@ class Client(private val options: Options) : Runnable {
                 if (keepUrl.isEmpty()) {
                     logger.error("KeepUrl is empty.")
                     session?.free()
+                    sleep(10 * 60 * 1000)
                     continue
                 }
             }

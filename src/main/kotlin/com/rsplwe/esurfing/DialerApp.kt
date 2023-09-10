@@ -78,9 +78,7 @@ object DialerApp {
                 }
             }
         }
-
-
-
+        
         val client = Client(Options(cmd.getOptionValue("user"), cmd.getOptionValue("password")))
 
         Runtime.getRuntime().addShutdownHook(object : Thread() {
