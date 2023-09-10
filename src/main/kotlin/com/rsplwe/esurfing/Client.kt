@@ -10,7 +10,7 @@ import com.rsplwe.esurfing.utils.getTime
 import org.apache.log4j.Logger
 import java.lang.Thread.sleep
 
-class Client(private val options: Options):Runnable {
+class Client(private val options: Options) : Runnable {
 
     private val logger: Logger = Logger.getLogger(Client::class.java)
     private var keepUrl = ""
