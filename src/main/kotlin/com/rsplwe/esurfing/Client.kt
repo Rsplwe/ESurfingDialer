@@ -27,7 +27,6 @@ class Client(private val options: Options) : Runnable {
             if (States.networkStatus == DEFAULT) logger.info("wait network check...")
             if (States.networkStatus == SUCCESS) {
                 if (session != null) {
-                    tick = System.currentTimeMillis()
                     if ((System.currentTimeMillis() - tick) >= (keepRetry.toLong() * 1000)) {
                         logger.info("Send Keep Packet")
                         heartbeat(ticket)
@@ -68,6 +67,7 @@ class Client(private val options: Options) : Runnable {
                     continue
                 }
                 States.networkStatus = SUCCESS
+                tick = System.currentTimeMillis()
                 logger.info("The network has been connected.")
             }
             sleep(200)
