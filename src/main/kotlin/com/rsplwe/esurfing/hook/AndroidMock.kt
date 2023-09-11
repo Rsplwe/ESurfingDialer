@@ -3,6 +3,7 @@ package com.rsplwe.esurfing.hook
 import com.github.unidbg.AndroidEmulator
 import com.github.unidbg.Emulator
 import com.github.unidbg.arm.HookStatus
+import com.github.unidbg.arm.backend.BackendFactory
 import com.github.unidbg.arm.backend.KvmFactory
 import com.github.unidbg.arm.backend.Unicorn2Factory
 import com.github.unidbg.hook.HookContext
@@ -26,8 +27,7 @@ class AndroidMock {
     private val emulator: AndroidEmulator = AndroidEmulatorBuilder
         .for32Bit()
         .setRootDir(States.rootDir)
-        .addBackendFactory(Unicorn2Factory(true))
-        .addBackendFactory(KvmFactory(true))
+        .addBackendFactory(getBackend())
         .setProcessName(Constants.PACKAGE_ID)
         .build()
 
@@ -48,12 +48,13 @@ class AndroidMock {
                 val arg2 = context!!.getPointerArg(1).getString(0)
                 val key = "ipv4"
 
-                if (arg2.indexOf(key) == 0){
+                if (arg2.indexOf(key) == 0) {
                     if (!cache.containsKey(key)) {
                         val fakeInputBlock = emulator!!.memory.malloc(key.length, true)
                         fakeInputBlock.pointer.write(key.toByteArray(StandardCharsets.UTF_8))
                         cache[key] = fakeInputBlock
                     }
+
                     emulator!!.backend.reg_write(ArmConst.UC_ARM_REG_R0, cache[key]!!.pointer.peer)
                 }
                 return HookStatus.RET(emulator, originFunction)
@@ -62,6 +63,16 @@ class AndroidMock {
         library.callJNI_OnLoad(emulator)
 
         jniMethod = vm.resolveClass("com/cndatacom/campus/netcore/DaMod")
+    }
+
+    private fun getBackend(): BackendFactory {
+        return if (States.useKvmBackend) {
+            logger.info("Use KVM Backend")
+            KvmFactory(false)
+        } else {
+            logger.info("Use Unicorn2 Backend")
+            Unicorn2Factory(false)
+        }
     }
 
 

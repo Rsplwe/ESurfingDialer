@@ -29,9 +29,15 @@ object DialerApp {
             .hasArg()
             .required(true)
             .desc("Login User Password").build()
+        val useKvmBackend = Option.builder("k").longOpt("kvm")
+            .argName("kvm")
+            .hasArg(false)
+            .required(false)
+            .desc("Use KVM Backend (ARM64)").build()
 
         options.addOption(loginUser)
         options.addOption(loginPassword)
+        options.addOption(useKvmBackend)
 
         val cmd: CommandLine
         val parser: CommandLineParser = DefaultParser()
@@ -44,6 +50,8 @@ object DialerApp {
             helper.printHelp("ESurfingDialer", options)
             exitProcess(1)
         }
+
+        States.useKvmBackend = cmd.hasOption("kvm")
 
         val networkCheck = object : Thread() {
             override fun run() {

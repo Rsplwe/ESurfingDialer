@@ -23,6 +23,8 @@ object States {
     @Volatile
     var isRunning = true
 
+    var useKvmBackend = false
+
     val ticketUrl: String
         get() {
             return "${Constants.BASE_URL}/ticket.cgi?wlanuserip=${userIp}&wlanacip=${acIp}&portal_node=${Constants.PORTAL_NODE}"

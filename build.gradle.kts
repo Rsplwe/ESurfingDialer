@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "com.rsplwe.esurfing"
-version = "1.1.0"
+version = "1.2.0"
 
 repositories {
     mavenCentral()
@@ -22,6 +22,7 @@ dependencies {
     implementation("com.squareup.okhttp3:okhttp:4.11.0")
     implementation("com.github.yescallop:fluent-uri:d8e12f23af")
     implementation("commons-cli:commons-cli:1.5.0")
+    implementation("commons-codec:commons-codec:1.16.0")
 }
 
 kotlin {
