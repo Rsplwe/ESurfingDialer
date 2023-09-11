@@ -62,6 +62,8 @@ class Client(private val options: Options) : Runnable {
                     sleep(10 * 60 * 1000)
                     continue
                 }
+                States.networkStatus = SUCCESS
+                logger.info("The network has been connected.")
             }
             sleep(200)
         }

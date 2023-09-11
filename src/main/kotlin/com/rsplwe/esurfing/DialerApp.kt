@@ -53,7 +53,7 @@ object DialerApp {
 
                     when (networkStatus.status) {
                         ConnectivityStatus.SUCCESS -> {
-                            logger.info("The network has been connected.")
+                            // logger.info("The network has been connected.")
                         }
 
                         ConnectivityStatus.IS_REDIRECTS_NOT_FOUND_IP -> {
@@ -78,7 +78,7 @@ object DialerApp {
                 }
             }
         }
-        
+
         val client = Client(Options(cmd.getOptionValue("user"), cmd.getOptionValue("password")))
 
         Runtime.getRuntime().addShutdownHook(object : Thread() {
