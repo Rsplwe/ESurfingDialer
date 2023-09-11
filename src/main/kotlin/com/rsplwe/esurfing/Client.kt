@@ -52,6 +52,9 @@ class Client(private val options: Options) : Runnable {
                     logger.info("Session ID: ${session?.getSessionId()}")
                 }
 
+                logger.info("Client IP: ${States.userIp}")
+                logger.info("AC IP: ${States.acIp}")
+
                 ticket = getTicket()
                 logger.info("Ticket: $ticket")
                 login()
@@ -59,6 +62,8 @@ class Client(private val options: Options) : Runnable {
                 if (keepUrl.isEmpty()) {
                     logger.error("KeepUrl is empty.")
                     session?.free()
+                    session = null
+
                     sleep(10 * 60 * 1000)
                     continue
                 }
@@ -122,6 +127,7 @@ class Client(private val options: Options) : Runnable {
         when (val result = post(Constants.AUTH_URL, session!!.encrypt(payload))) {
             is NetResult.Success -> {
                 val data = session!!.decrypt(result.data.string())
+                logger.info(data)
                 keepUrl = data.substringAfter("<keep-url><![CDATA[").substringBefore("]]></keep-url>")
                 termUrl = data.substringAfter("<term-url><![CDATA[").substringBefore("]]></term-url>")
                 keepRetry = data.substringAfter("<keep-retry>").substringBefore("</keep-retry>")

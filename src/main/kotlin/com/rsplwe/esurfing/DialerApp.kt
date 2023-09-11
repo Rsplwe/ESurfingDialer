@@ -61,9 +61,6 @@ object DialerApp {
                         }
 
                         ConnectivityStatus.IS_REDIRECTS_FOUND_IP -> {
-                            logger.info("Client IP: ${networkStatus.userIp}")
-                            logger.info("AC IP: ${networkStatus.acIp}")
-
                             States.userIp = networkStatus.userIp!!
                             States.acIp = networkStatus.acIp!!
                         }
