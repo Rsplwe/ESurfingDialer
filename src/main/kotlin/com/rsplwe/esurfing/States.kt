@@ -23,7 +23,7 @@ object States {
     @Volatile
     var isRunning = true
 
-    var useKvmBackend = false
+    var useDynarmic = false
 
     val ticketUrl: String
         get() {

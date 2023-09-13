@@ -4,7 +4,7 @@ import com.github.unidbg.AndroidEmulator
 import com.github.unidbg.Emulator
 import com.github.unidbg.arm.HookStatus
 import com.github.unidbg.arm.backend.BackendFactory
-import com.github.unidbg.arm.backend.KvmFactory
+import com.github.unidbg.arm.backend.DynarmicFactory
 import com.github.unidbg.arm.backend.Unicorn2Factory
 import com.github.unidbg.hook.HookContext
 import com.github.unidbg.hook.ReplaceCallback
@@ -33,7 +33,7 @@ class AndroidMock {
 
     init {
         logger.info("Initializing Android Mock...")
-        emulator.memory.setLibraryResolver(AndroidResolver(23))
+        emulator.memory.setLibraryResolver(AndroidResolver(19))
 
         val vm = emulator.createDalvikVM()
         vm.setJni(ESurfingJni())
@@ -66,9 +66,9 @@ class AndroidMock {
     }
 
     private fun getBackend(): BackendFactory {
-        return if (States.useKvmBackend) {
-            logger.info("Use KVM Backend")
-            KvmFactory(false)
+        return if (States.useDynarmic) {
+            logger.info("Use Dynarmic Backend")
+            DynarmicFactory(false)
         } else {
             logger.info("Use Unicorn2 Backend")
             Unicorn2Factory(false)

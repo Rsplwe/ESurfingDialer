@@ -29,15 +29,15 @@ object DialerApp {
             .hasArg()
             .required(true)
             .desc("Login User Password").build()
-        val useKvmBackend = Option.builder("k").longOpt("kvm")
-            .argName("kvm")
+        val useDynarmicBackend = Option.builder("d").longOpt("dynarmic")
+            .argName("dynarmic")
             .hasArg(false)
             .required(false)
-            .desc("Use KVM Backend (ARM64)").build()
+            .desc("Use Dynarmic Backend").build()
 
         options.addOption(loginUser)
         options.addOption(loginPassword)
-        options.addOption(useKvmBackend)
+        options.addOption(useDynarmicBackend)
 
         val cmd: CommandLine
         val parser: CommandLineParser = DefaultParser()
@@ -51,7 +51,7 @@ object DialerApp {
             exitProcess(1)
         }
 
-        States.useKvmBackend = cmd.hasOption("kvm")
+        States.useDynarmic = cmd.hasOption("dynarmic")
 
         val networkCheck = object : Thread() {
             override fun run() {
