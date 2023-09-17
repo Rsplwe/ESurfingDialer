@@ -6,6 +6,7 @@ import com.rsplwe.esurfing.hook.Session
 import com.rsplwe.esurfing.network.NetResult
 import com.rsplwe.esurfing.network.post
 import com.rsplwe.esurfing.utils.ConnectivityStatus.*
+import com.rsplwe.esurfing.utils.MacAddress
 import com.rsplwe.esurfing.utils.getTime
 import org.apache.log4j.Logger
 import java.lang.Thread.sleep
@@ -43,6 +44,7 @@ class Client(private val options: Options) : Runnable {
             if (States.networkStatus == IS_REDIRECTS_FOUND_IP) {
                 session?.free()
                 States.algoId = "00000000-0000-0000-0000-000000000000"
+                States.macAddress = MacAddress.random()
                 initSession()
                 if ((session?.getSessionId() ?: 0) == 0.toLong()) {
                     logger.error("Failed to initialize session.")
