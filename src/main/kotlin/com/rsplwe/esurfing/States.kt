@@ -2,14 +2,13 @@ package com.rsplwe.esurfing
 
 import com.rsplwe.esurfing.utils.ConnectivityStatus
 import java.io.File
-import java.util.*
 
 
 object States {
 
     val rootDir = File("target")
 
-    val clientId = UUID.randomUUID().toString().lowercase()
+    var clientId = ""
     var algoId = ""
     var macAddress = ""
     var userIp = ""
