@@ -6,7 +6,37 @@
 ### 使用
 ```bash
 java -jar client.jar -u <用户名/手机号> -p <密码>
+````
+
+### OpenWRT 部署
+目前仅支持 x86_64 及 ARMv8 架构运行。以 ARMv8 架构运行时，请使用 Dynarmic 后端。
+
+默认 OpenWRT 环境为 musl 运行时，请使用安装Docker软件包部署。当以 Docker 运行时，请包含 `--network host` 参数
+
+推荐容器：openjdk:17
+
+![](imgs/01.png)
+![](imgs/02.png)
+
+```bash
+docker build -t dialer .
+docker run -itd -e DIALER_USER=<用户名/手机号> -e DIALER_PASSWORD=<密码> --name dialer-client --network host --restart=always dialer
 ```
+
+Dockerfile
+```dockerfile
+FROM openjdk:17
+WORKDIR /app
+COPY run.sh /app
+COPY ESurfingDialer-1.2.0-all.jar /app
+CMD ["./run.sh"]
+```
+run.sh
+```bash
+#!/bin/sh
+java -jar ESurfingDialer-1.2.0-all.jar -u ${DIALER_USER} -p ${DIALER_PASSWORD} -d
+```
+
 
 ### 构建
 需要 Java 版本 >= 17
