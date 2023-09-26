@@ -3,15 +3,21 @@
 
 广东电信天翼校园（ZSM验证）登入认证客户端
 
+### 运行环境
+* Java 17 及以上
+* x86_64 或 ARMv8
+* glibc (linux only)
+* 内存 ≥ 200M
+
 ### 使用
 ```bash
 java -jar client.jar -u <用户名/手机号> -p <密码>
 ````
 
-### OpenWRT 部署
+### OpenWrt 部署
 目前仅支持 x86_64 及 ARMv8 架构运行。以 ARMv8 架构运行时，请使用 Dynarmic 后端。
 
-默认 OpenWRT 环境为 musl 运行时，请使用安装Docker软件包部署。当以 Docker 运行时，请包含 `--network host` 参数
+默认 OpenWRT 环境为 musl 运行时，请使用安装 Docker 软件包部署。当以 Docker 运行时，请包含 `--network host` 参数
 
 推荐容器：openjdk:17
 
@@ -28,13 +34,13 @@ Dockerfile
 FROM openjdk:17
 WORKDIR /app
 COPY run.sh /app
-COPY ESurfingDialer-1.2.0-all.jar /app
+COPY client.jar /app
 CMD ["./run.sh"]
 ```
 run.sh
 ```bash
 #!/bin/sh
-java -jar ESurfingDialer-1.2.0-all.jar -u ${DIALER_USER} -p ${DIALER_PASSWORD} -d
+java -jar client.jar -u ${DIALER_USER} -p ${DIALER_PASSWORD} -d
 ```
 
 
