@@ -4,7 +4,7 @@
 广东电信天翼校园（ZSM验证）登入认证客户端
 
 ### 运行环境
-* Java 17 及以上
+* Java 21 及以上
 * x86_64 或 ARMv8
 * glibc (linux only)
 * 内存 ≥ 200M
@@ -31,7 +31,7 @@ docker run -itd -e DIALER_USER=<用户名/手机号> -e DIALER_PASSWORD=<密码>
 
 Dockerfile
 ```dockerfile
-FROM openjdk:17
+FROM openjdk:21
 WORKDIR /app
 COPY run.sh /app
 COPY client.jar /app
