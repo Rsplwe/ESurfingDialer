@@ -1,5 +1,5 @@
 plugins {
-    kotlin("jvm") version "1.9.20-RC"
+    kotlin("jvm") version "1.9.20-RC2"
     id("com.github.johnrengelman.shadow") version "8.1.1"
     application
 }
