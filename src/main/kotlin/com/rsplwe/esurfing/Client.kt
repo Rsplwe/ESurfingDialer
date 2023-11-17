@@ -109,7 +109,6 @@ class Client(private val options: Options) : Runnable {
         when (val result = post(States.ticketUrl, session!!.encrypt(payload))) {
             is NetResult.Success -> {
                 val data = session!!.decrypt(result.data.toString(Charsets.UTF_8))
-                logger.info(data)
                 return data.substringAfter("<ticket>").substringBefore("</ticket>")
             }
 
