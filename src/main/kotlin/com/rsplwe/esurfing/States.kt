@@ -14,6 +14,7 @@ object States {
     var userIp = ""
     var acIp = ""
     var ticket = ""
+    var networkInterface = ""
 
     @get:Synchronized
     var networkStatus: ConnectivityStatus = ConnectivityStatus.DEFAULT

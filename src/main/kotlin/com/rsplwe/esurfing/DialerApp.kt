@@ -34,10 +34,16 @@ object DialerApp {
             .hasArg(false)
             .required(false)
             .desc("Use Dynarmic Backend").build()
+        val networkInterface = Option.builder("i").longOpt("interface")
+            .argName("interface")
+            .hasArg()
+            .required(false)
+            .desc("Special an interface").build()
 
         options.addOption(loginUser)
         options.addOption(loginPassword)
         options.addOption(useDynarmicBackend)
+        options.addOption(networkInterface)
 
         val cmd: CommandLine
         val parser: CommandLineParser = DefaultParser()
@@ -52,6 +58,10 @@ object DialerApp {
         }
 
         States.useDynarmic = cmd.hasOption("dynarmic")
+        if (cmd.hasOption("interface")) {
+            logger.info("You have specialized an interface named ${cmd.getOptionValue("interface")}.")
+            States.networkInterface = cmd.getOptionValue("interface")
+        }
 
         val networkCheck = object : Thread() {
             override fun run() {

@@ -83,7 +83,7 @@ class Client(private val options: Options) : Runnable {
     private fun initSession() {
         when (val result = post(States.ticketUrl, States.algoId)) {
             is NetResult.Success -> {
-                session = Session(result.data.bytes())
+                session = Session(result.data)
             }
 
             is NetResult.Error -> {
@@ -108,7 +108,8 @@ class Client(private val options: Options) : Runnable {
         """.trimIndent()
         when (val result = post(States.ticketUrl, session!!.encrypt(payload))) {
             is NetResult.Success -> {
-                val data = session!!.decrypt(result.data.string())
+                val data = session!!.decrypt(result.data.toString(Charsets.UTF_8))
+                logger.info(data)
                 return data.substringAfter("<ticket>").substringBefore("</ticket>")
             }
 
@@ -132,7 +133,7 @@ class Client(private val options: Options) : Runnable {
         """.trimIndent()
         when (val result = post(Constants.AUTH_URL, session!!.encrypt(payload))) {
             is NetResult.Success -> {
-                val data = session!!.decrypt(result.data.string())
+                val data = session!!.decrypt(result.data.toString(Charsets.UTF_8))
                 logger.info(data)
                 keepUrl = data.substringAfter("<keep-url><![CDATA[").substringBefore("]]></keep-url>")
                 termUrl = data.substringAfter("<term-url><![CDATA[").substringBefore("]]></term-url>")
@@ -166,7 +167,7 @@ class Client(private val options: Options) : Runnable {
         """.trimIndent()
         when (val result = post(keepUrl, session!!.encrypt(payload))) {
             is NetResult.Success -> {
-                val data = session!!.decrypt(result.data.string())
+                val data = session!!.decrypt(result.data.toString(Charsets.UTF_8))
                 keepRetry = data.substringAfter("<interval>").substringBefore("</interval>")
             }
 

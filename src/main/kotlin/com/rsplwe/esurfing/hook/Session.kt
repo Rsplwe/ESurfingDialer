@@ -40,11 +40,6 @@ class Session(zsm: ByteArray) {
         return this.sessionId
     }
 
-    fun getKey(): String {
-        val r: DvmObject<*> = method.callStaticJniMethodObject(emulator, "key(J)Ljava/lang/String;", sessionId)
-        return r.value as String
-    }
-
     fun encrypt(hex: String): String {
         val r: DvmObject<*> = method.callStaticJniMethodObject(emulator, "enc(J[B)[B", sessionId, hex.toByteArray(Charsets.UTF_8))
         return String((r.value as ByteArray))

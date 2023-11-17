@@ -2,8 +2,7 @@ package com.rsplwe.esurfing.utils
 
 import cn.yescallop.fluenturi.Uri
 import com.rsplwe.esurfing.Constants
-import com.rsplwe.esurfing.network.createHttpClient
-import okhttp3.Request
+import com.rsplwe.esurfing.network.sendCurlRequest
 
 enum class ConnectivityStatus {
     SUCCESS,
@@ -21,20 +20,15 @@ data class NetworkConnectivityResult(
 )
 
 fun checkConnectivity(): NetworkConnectivityResult {
-    val client = createHttpClient(false)
-    val request = Request.Builder()
-        .removeHeader("User-Agent")
-        .addHeader("User-Agent", Constants.USER_AGENT)
-        .addHeader("Accept", Constants.REQUEST_ACCEPT)
-        .url(Constants.CAPTIVE_URL)
-        .build()
+    val params = ArrayList<String>()
+    params.add("-H \"User-Agent: ${Constants.USER_AGENT}\"")
+    params.add("-H \"Accept: ${Constants.REQUEST_ACCEPT}\"")
+    params.add("url=\"${Constants.CAPTIVE_URL}\"")
 
     try {
-        val response = client.newCall(request).execute()
-        val location = response.headers["Location"]
-        val responseCode = response.code
-
-        response.close()
+        val response = sendCurlRequest(params, true).toString(Charsets.UTF_8)
+        val responseCode = Regex("^HTTP/\\d\\.\\d (\\d+)", RegexOption.IGNORE_CASE).find(response)?.groupValues?.get(1)?.toInt() ?: 0
+        val location = Regex("Location: (.+)", RegexOption.IGNORE_CASE).find(response)?.groupValues?.get(1)
 
         when (responseCode) {
             302 -> {
@@ -57,12 +51,12 @@ fun checkConnectivity(): NetworkConnectivityResult {
                 }
             }
 
-            200, 204 -> {
+            200, 204, 404 -> {
                 return NetworkConnectivityResult(status = ConnectivityStatus.SUCCESS)
             }
 
             else -> {
-                throw RuntimeException("Request Code: ${response.code}")
+                throw RuntimeException("Request Code: $responseCode")
             }
         }
     } catch (e: Throwable) {
