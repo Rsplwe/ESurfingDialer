@@ -13,7 +13,7 @@ repositories {
 }
 
 dependencies {
-    implementation("com.github.zhkl0228:unicorn:1.0.13")
+    implementation("com.github.zhkl0228:unicorn:1.0.14")
     implementation("com.github.zhkl0228:unidbg-android:0.9.7")
     implementation("com.github.zhkl0228:unidbg-api:0.9.7")
     implementation("com.github.zhkl0228:unidbg-dynarmic:0.9.7")
