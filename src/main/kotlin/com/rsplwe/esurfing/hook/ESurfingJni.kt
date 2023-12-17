@@ -7,39 +7,44 @@ import java.io.File
 
 class ESurfingJni : AbstractJni() {
 
-    override fun callObjectMethod(
+    override fun callObjectMethodV(
         vm: BaseVM?,
         dvmObject: DvmObject<*>?,
         signature: String?,
-        varArg: VarArg?
+        vaList: VaList?
     ): DvmObject<*> {
         when (signature) {
             "android/content/Context->getFilesDir()Ljava/io/File;" -> {
                 return vm!!.resolveClass("java/io/File").newObject(States.rootDir)
             }
+
             "java/io/File->getAbsolutePath()Ljava/lang/String;" -> {
                 val file = dvmObject!!.value as File
                 return StringObject(vm, file.absolutePath)
             }
         }
-        return super.callObjectMethod(vm, dvmObject, signature, varArg)
+        return super.callObjectMethodV(vm, dvmObject, signature, vaList)
     }
 
-    override fun callStaticObjectMethod(
+    override fun callStaticObjectMethodV(
         vm: BaseVM?,
         dvmClass: DvmClass?,
         signature: String?,
-        varArg: VarArg?
+        vaList: VaList?
     ): DvmObject<*> {
         when (signature) {
             "android/app/ActivityThread->currentPackageName()Ljava/lang/String;" -> {
                 return StringObject(vm, Constants.PACKAGE_ID)
             }
+
             "android/app/ActivityThread->currentApplication()Landroid/app/Application;" -> {
-                return vm!!.resolveClass("android/app/Application", vm.resolveClass("android/content/ContextWrapper", vm.resolveClass("android/content/Context"))).newObject(signature)
+                return vm!!.resolveClass(
+                    "android/app/Application",
+                    vm.resolveClass("android/content/ContextWrapper", vm.resolveClass("android/content/Context"))
+                ).newObject(signature)
             }
         }
-        return super.callStaticObjectMethod(vm, dvmClass, signature, varArg)
+        return super.callStaticObjectMethodV(vm, dvmClass, signature, vaList)
     }
 
 }
