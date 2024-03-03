@@ -20,8 +20,9 @@ data class NetworkConnectivityResult(
     val message: String = "ok"
 )
 
+val captiveClient = createHttpClient(false)
+
 fun checkConnectivity(): NetworkConnectivityResult {
-    val client = createHttpClient(false)
     val request = Request.Builder()
         .removeHeader("User-Agent")
         .addHeader("User-Agent", Constants.USER_AGENT)
@@ -30,7 +31,7 @@ fun checkConnectivity(): NetworkConnectivityResult {
         .build()
 
     try {
-        val response = client.newCall(request).execute()
+        val response = captiveClient.newCall(request).execute()
         val location = response.headers["Location"]
         val responseCode = response.code
 
@@ -67,5 +68,5 @@ fun checkConnectivity(): NetworkConnectivityResult {
         }
     } catch (e: Throwable) {
         return NetworkConnectivityResult(ConnectivityStatus.REQUEST_ERROR, message = e.localizedMessage)
-    }
+    } 
 }
