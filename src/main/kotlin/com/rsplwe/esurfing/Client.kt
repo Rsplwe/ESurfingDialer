@@ -183,12 +183,12 @@ class Client(private val options: Options) {
                 <user-agent>${Constants.USER_AGENT}</user-agent>
                 <client-id>${States.clientId}</client-id>
                 <local-time>${getTime()}</local-time>
-                <host-name>Xiaomi 6</host-name>
+                <host-name>${Constants.HOST_NAME}</host-name>
                 <ipv4>${States.userIp}</ipv4>
                 <ticket>${ticket}</ticket>
                 <ipv6></ipv6>
                 <mac>${States.macAddress}</mac>
-                <ostag>Xiaomi 6</ostag>
+                <ostag>${Constants.HOST_NAME}</ostag>
             </request>
         """.trimIndent()
         when (val result = post(keepUrl, session!!.encrypt(payload))) {
@@ -211,12 +211,12 @@ class Client(private val options: Options) {
                 <user-agent>${Constants.USER_AGENT}</user-agent>
                 <client-id>${States.clientId}</client-id>
                 <local-time>${getTime()}</local-time>
-                <host-name>Xiaomi 6</host-name>
+                <host-name>${Constants.HOST_NAME}</host-name>
                 <ipv4>${States.userIp}</ipv4>
                 <ticket>${ticket}</ticket>
                 <ipv6></ipv6>
                 <mac>${States.macAddress}</mac>
-                <ostag>Xiaomi 6</ostag>
+                <ostag>${Constants.HOST_NAME}</ostag>
             </request>
         """.trimIndent()
         when (val result = post(termUrl, session!!.encrypt(payload))) {
