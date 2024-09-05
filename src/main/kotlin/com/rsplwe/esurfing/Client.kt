@@ -139,11 +139,7 @@ class Client(private val options: Options) {
     }
 
     private fun login(code: String = "") {
-        val verify = if (code == "") {
-            ""
-        } else {
-            "<verify>${code}</verify>"
-        }
+        val verify = if (code.isBlank()) "" else "<verify>${code}</verify>"
         val payload = """
             <?xml version="1.0" encoding="utf-8"?>
             <request>
