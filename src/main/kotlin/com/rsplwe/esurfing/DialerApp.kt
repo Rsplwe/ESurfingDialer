@@ -27,15 +27,8 @@ object DialerApp {
             .hasArg()
             .required(true)
             .desc("Login User Password").build()
-        val useDynarmicBackend = Option.builder("d").longOpt("dynarmic")
-            .argName("dynarmic")
-            .hasArg(false)
-            .required(false)
-            .desc("Use Dynarmic Backend").build()
-
         options.addOption(loginUser)
         options.addOption(loginPassword)
-        options.addOption(useDynarmicBackend)
 
         val cmd: CommandLine
         val parser: CommandLineParser = DefaultParser()
@@ -48,8 +41,6 @@ object DialerApp {
             helper.printHelp("ESurfingDialer", options)
             exitProcess(1)
         }
-
-        States.useDynarmic = cmd.hasOption("dynarmic")
 
         val client = Client(Options(cmd.getOptionValue("user"), cmd.getOptionValue("password")))
 

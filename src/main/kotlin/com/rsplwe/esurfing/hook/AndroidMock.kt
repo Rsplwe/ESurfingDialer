@@ -3,7 +3,6 @@ package com.rsplwe.esurfing.hook
 import com.github.unidbg.AndroidEmulator
 import com.github.unidbg.arm.backend.BackendFactory
 import com.github.unidbg.arm.backend.DynarmicFactory
-import com.github.unidbg.arm.backend.Unicorn2Factory
 import com.github.unidbg.linux.android.AndroidEmulatorBuilder
 import com.github.unidbg.linux.android.AndroidResolver
 import com.github.unidbg.linux.android.dvm.DvmClass
@@ -39,13 +38,8 @@ class AndroidMock {
     }
 
     private fun getBackend(): BackendFactory {
-        return if (States.useDynarmic) {
-            logger.info("Use Dynarmic Backend")
-            DynarmicFactory(false)
-        } else {
-            logger.info("Use Unicorn2 Backend")
-            Unicorn2Factory(false)
-        }
+        logger.info("Use Dynarmic Backend")
+        return DynarmicFactory(false)
     }
 
 

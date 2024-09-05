@@ -19,8 +19,6 @@ object States {
     @Volatile
     var isRunning = true
 
-    var useDynarmic = false
-
     var schoolId = ""
     var domain = ""
     var area = ""
