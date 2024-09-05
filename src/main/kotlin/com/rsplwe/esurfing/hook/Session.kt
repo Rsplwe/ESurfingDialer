@@ -14,7 +14,7 @@ class Session(zsm: ByteArray) {
     private val method: DvmClass = AndroidMock.getInstance().getJniMethod()
     private val sessionId: Long
     private val clientId: String
-    
+
     init {
         logger.info("Initializing Session...")
         sessionId = this.load(zsm)
@@ -27,11 +27,12 @@ class Session(zsm: ByteArray) {
     }
 
     fun decrypt(hex: String): String {
-        val r: DvmObject<*> = method.callStaticJniMethodObject(emulator, "dec(J[B)[B", sessionId, hex.toByteArray(Charsets.UTF_8))
+        val r: DvmObject<*> =
+            method.callStaticJniMethodObject(emulator, "dec(J[B)[B", sessionId, hex.toByteArray(Charsets.UTF_8))
         return String((r.value as ByteArray))
     }
 
-    private fun getAlgoId(): String {
+    fun getAlgoId(): String {
         val r: DvmObject<*> = method.callStaticJniMethodObject(emulator, "aid(J)Ljava/lang/String;", sessionId)
         return r.value as String
     }
@@ -46,11 +47,13 @@ class Session(zsm: ByteArray) {
     }
 
     fun encrypt(hex: String): String {
-        val r: DvmObject<*> = method.callStaticJniMethodObject(emulator, "enc(J[B)[B", sessionId, hex.toByteArray(Charsets.UTF_8))
+        val r: DvmObject<*> =
+            method.callStaticJniMethodObject(emulator, "enc(J[B)[B", sessionId, hex.toByteArray(Charsets.UTF_8))
         return String((r.value as ByteArray))
     }
 
     fun free() {
         method.callStaticJniMethodObject<DvmObject<*>>(emulator, "free(J)V", sessionId)
+        emulator.close()
     }
 }

@@ -6,13 +6,16 @@ import com.rsplwe.esurfing.hook.Session
 import com.rsplwe.esurfing.network.NetResult
 import com.rsplwe.esurfing.network.post
 import com.rsplwe.esurfing.utils.ConnectivityStatus.*
-import com.rsplwe.esurfing.utils.MacAddress
+import com.rsplwe.esurfing.utils.checkVerifyCodeStatus
+import com.rsplwe.esurfing.utils.detectConfig
 import com.rsplwe.esurfing.utils.getTime
+import com.rsplwe.esurfing.utils.getVerifyCode
 import org.apache.log4j.Logger
+import org.jsoup.Jsoup
+import org.jsoup.parser.Parser
 import java.lang.Thread.sleep
-import java.util.*
 
-class Client(private val options: Options) : Runnable {
+class Client(private val options: Options) {
 
     private val logger: Logger = Logger.getLogger(Client::class.java)
     private var keepUrl = ""
@@ -24,60 +27,71 @@ class Client(private val options: Options) : Runnable {
     @Volatile
     var tick: Long = 0
 
-    override fun run() {
+    fun run() {
         while (isRunning) {
-            if (States.networkStatus == DEFAULT) logger.info("wait network check...")
-            if (States.networkStatus == SUCCESS) {
-                if (session != null) {
-                    if ((System.currentTimeMillis() - tick) >= (keepRetry.toLong() * 1000)) {
-                        logger.info("Send Keep Packet")
-                        heartbeat(ticket)
-                        logger.info("Next Retry: $keepRetry")
-                        tick = System.currentTimeMillis()
+            val networkStatus = detectConfig()
+            when (networkStatus) {
+                SUCCESS -> {
+                    if (session != null) {
+                        if ((System.currentTimeMillis() - tick) >= (keepRetry.toLong() * 1000)) {
+                            logger.info("Send Keep Packet")
+                            heartbeat(ticket)
+                            logger.info("Next Retry: $keepRetry")
+                            tick = System.currentTimeMillis()
+                        }
+                    } else {
+                        logger.info("The network has been connected.")
+                        sleep(5000)
                     }
                 }
-            }
-            if (States.networkStatus == IS_REDIRECTS_NOT_FOUND_IP) continue
-            if (States.networkStatus == REQUEST_ERROR) {
-                sleep(5000)
-                continue
-            }
-            if (States.networkStatus == IS_REDIRECTS_FOUND_IP) {
-                session?.free()
-                // Reset Info
-                States.algoId = "00000000-0000-0000-0000-000000000000"
-                States.macAddress = MacAddress.random()
-                States.clientId = UUID.randomUUID().toString().lowercase()
-
-                initSession()
-                if ((session?.getSessionId() ?: 0) == 0.toLong()) {
-                    logger.error("Failed to initialize session.")
-                    continue
-                } else {
-                    logger.info("Session ID: ${session?.getSessionId()}")
+                REQUIRE_AUTHORIZATION -> authorization()
+                else -> {
+                    sleep(5000)
                 }
-
-                logger.info("Client IP: ${States.userIp}")
-                logger.info("AC IP: ${States.acIp}")
-
-                ticket = getTicket()
-                logger.info("Ticket: $ticket")
-                login()
-
-                if (keepUrl.isEmpty()) {
-                    logger.error("KeepUrl is empty.")
-                    session?.free()
-                    session = null
-
-                    sleep(10 * 60 * 1000)
-                    continue
-                }
-                States.networkStatus = SUCCESS
-                tick = System.currentTimeMillis()
-                logger.info("The network has been connected.")
             }
             sleep(200)
         }
+    }
+
+    private fun authorization() {
+        var code = ""
+        if (checkVerifyCodeStatus(options.loginUser) && getVerifyCode(options.loginUser)) {
+            logger.info("This login requires a SMS verification code.")
+            while (true) {
+                print("Input Code: ")
+                val input = readLine()
+                if (input != null) {
+                    val input = input.trim()
+                    if (input.isNotBlank()) {
+                        println("Code is: $input")
+                        code = input
+                        break
+                    }
+                }
+            }
+        }
+        session?.free()
+        initSession()
+        if ((session?.getSessionId() ?: 0) == 0.toLong()) {
+            logger.error("Failed to initialize session.")
+            isRunning = false
+        }
+
+        logger.info("Session ID: ${session?.getSessionId()}")
+        logger.info("Client IP: ${States.userIp}")
+        logger.info("AC IP: ${States.acIp}")
+
+        ticket = getTicket()
+        logger.info("Ticket: $ticket")
+
+        login(code)
+        if (keepUrl.isEmpty()) {
+            logger.error("KeepUrl is empty.")
+            session?.free()
+            isRunning = false
+        }
+        tick = System.currentTimeMillis()
+        logger.info("The login has been authorized.")
     }
 
     private fun initSession() {
@@ -99,17 +113,19 @@ class Client(private val options: Options) : Runnable {
                 <user-agent>${Constants.USER_AGENT}</user-agent>
                 <client-id>${States.clientId}</client-id>
                 <local-time>${getTime()}</local-time>
-                <host-name>Xiaomi 6</host-name>
+                <host-name>${Constants.HOST_NAME}</host-name>
                 <ipv4>${States.userIp}</ipv4>
                 <ipv6></ipv6>
                 <mac>${States.macAddress}</mac>
-                <ostag>Xiaomi 6</ostag>
+                <ostag>${Constants.HOST_NAME}</ostag>
+                <gwip>${States.acIp}</gwip>
             </request>
         """.trimIndent()
         when (val result = post(States.ticketUrl, session!!.encrypt(payload))) {
             is NetResult.Success -> {
                 val data = session!!.decrypt(result.data.string())
-                return data.substringAfter("<ticket>").substringBefore("</ticket>")
+                val doc = Jsoup.parse(data, Parser.xmlParser())
+                return doc.getElementsByTag("ticket").first()?.text() ?: ""
             }
 
             is NetResult.Error -> {
@@ -118,25 +134,32 @@ class Client(private val options: Options) : Runnable {
         }
     }
 
-    private fun login() {
+    private fun login(code: String = "") {
+        val verify = if (code == "") {
+            ""
+        } else {
+            "<verify>${code}</verify>"
+        }
         val payload = """
             <?xml version="1.0" encoding="utf-8"?>
             <request>
                 <user-agent>${Constants.USER_AGENT}</user-agent>
                 <client-id>${States.clientId}</client-id>
-                <local-time>${getTime()}</local-time>
                 <ticket>${ticket}</ticket>
+                <local-time>${getTime()}</local-time>
                 <userid>${options.loginUser}</userid>
                 <passwd>${options.loginPassword}</passwd>
+                $verify
             </request>
         """.trimIndent()
-        when (val result = post(Constants.AUTH_URL, session!!.encrypt(payload))) {
+        when (val result = post(States.authUrl, session!!.encrypt(payload))) {
             is NetResult.Success -> {
                 val data = session!!.decrypt(result.data.string())
-                logger.info(data)
-                keepUrl = data.substringAfter("<keep-url><![CDATA[").substringBefore("]]></keep-url>")
-                termUrl = data.substringAfter("<term-url><![CDATA[").substringBefore("]]></term-url>")
-                keepRetry = data.substringAfter("<keep-retry>").substringBefore("</keep-retry>")
+                val doc = Jsoup.parse(data, Parser.xmlParser())
+
+                keepUrl = doc.getElementsByTag("keep-url").first()?.text() ?: ""
+                termUrl = doc.getElementsByTag("term-url").first()?.text() ?: ""
+                keepRetry = doc.getElementsByTag("keep-retry").first()?.text() ?: ""
 
                 logger.info("Keep Url: $keepUrl")
                 logger.info("Term Url: $termUrl")
@@ -167,7 +190,8 @@ class Client(private val options: Options) : Runnable {
         when (val result = post(keepUrl, session!!.encrypt(payload))) {
             is NetResult.Success -> {
                 val data = session!!.decrypt(result.data.string())
-                keepRetry = data.substringAfter("<interval>").substringBefore("</interval>")
+                val doc = Jsoup.parse(data, Parser.xmlParser())
+                keepRetry = doc.getElementsByTag("interval").first()?.text() ?: ""
             }
 
             is NetResult.Error -> {
