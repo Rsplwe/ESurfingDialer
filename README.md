@@ -15,7 +15,7 @@ java -jar client.jar -u <用户名/手机号> -p <密码>
 ````
 
 ### OpenWrt 部署
-目前仅支持 x86_64 及 ARMv8 架构运行。以 ARMv8 架构运行时，请使用 Dynarmic 后端。
+目前仅支持 x86_64 及 ARMv8 架构运行。
 
 默认 OpenWRT 环境为 musl 运行时，请使用安装 Docker 软件包部署。当以 Docker 运行时，请包含 `--network host` 参数
 
@@ -45,7 +45,7 @@ java -jar client.jar -u ${DIALER_USER} -p ${DIALER_PASSWORD} -d
 
 
 ### 构建
-需要 Java 版本 >= 17
+需要 Java 版本 >= 20
 ```bash
 ./gradlew jar
 ```
