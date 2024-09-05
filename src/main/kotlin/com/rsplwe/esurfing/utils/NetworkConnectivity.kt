@@ -42,7 +42,7 @@ fun detectConfig(): ConnectivityStatus {
         val content = response.body!!.string()
         response.close()
 
-        val portalConfig = extractBetweenTags(content, Constants.PORTAL_START_TAG, Constants.PORTAL_END_TAG)
+        val portalConfig = content.extractBetweenTags(Constants.PORTAL_START_TAG, Constants.PORTAL_END_TAG)
         if (portalConfig.isNotEmpty()) {
 
             val doc = Jsoup.parse(portalConfig, Parser.xmlParser())

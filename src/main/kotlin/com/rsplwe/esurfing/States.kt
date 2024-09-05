@@ -1,6 +1,6 @@
 package com.rsplwe.esurfing
 
-import com.rsplwe.esurfing.utils.MacAddress
+import com.rsplwe.esurfing.utils.randomMACAddress
 import java.io.File
 import java.util.UUID
 
@@ -11,7 +11,7 @@ object States {
 
     var clientId = UUID.randomUUID().toString().lowercase()
     var algoId = "00000000-0000-0000-0000-000000000000"
-    var macAddress = MacAddress.random()
+    var macAddress = randomMACAddress()
     var ticket = ""
     var userIp = ""
     var acIp = ""

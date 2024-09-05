@@ -44,32 +44,18 @@ class Client(private val options: Options) {
                         sleep(5000)
                     }
                 }
+
                 REQUIRE_AUTHORIZATION -> authorization()
                 else -> {
                     sleep(5000)
                 }
             }
-            sleep(200)
+            sleep(1000)
         }
     }
 
     private fun authorization() {
-        var code = ""
-        if (checkVerifyCodeStatus(options.loginUser) && getVerifyCode(options.loginUser)) {
-            logger.info("This login requires a SMS verification code.")
-            while (true) {
-                print("Input Code: ")
-                val input = readLine()
-                if (input != null) {
-                    val input = input.trim()
-                    if (input.isNotBlank()) {
-                        println("Code is: $input")
-                        code = input
-                        break
-                    }
-                }
-            }
-        }
+        var code = checkSMSVerify()
         session?.free()
         initSession()
         if ((session?.getSessionId() ?: 0) == 0.toLong()) {
@@ -92,6 +78,24 @@ class Client(private val options: Options) {
         }
         tick = System.currentTimeMillis()
         logger.info("The login has been authorized.")
+    }
+
+    private fun checkSMSVerify(): String {
+        if (checkVerifyCodeStatus(options.loginUser) && getVerifyCode(options.loginUser)) {
+            logger.info("This login requires a SMS verification code.")
+            while (true) {
+                print("Input Code: ")
+                val input = readLine()
+                if (input != null) {
+                    val code = input.trim()
+                    if (code.isNotBlank()) {
+                        println("Code is: $code")
+                        return code
+                    }
+                }
+            }
+        }
+        return ""
     }
 
     private fun initSession() {
