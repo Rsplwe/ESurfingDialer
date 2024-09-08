@@ -161,12 +161,6 @@ class Client(private val options: Options) {
                 termUrl = doc.getElementsByTag("term-url").first()?.text() ?: ""
                 keepRetry = doc.getElementsByTag("keep-retry").first()?.text() ?: ""
 
-                // 检查keepRetry值是否正确，不正确则设置为默认值60
-                if (keepRetry.isBlank() || keepRetry.toInt() <= 0) {
-                    keepRetry = "60"
-                    logger.warn("KeepRetry value is incorrect, setting to default: $keepRetry")
-                }
-
                 logger.info("Keep Url: $keepUrl")
                 logger.info("Term Url: $termUrl")
                 logger.info("Keep Retry: $keepRetry")
@@ -198,12 +192,6 @@ class Client(private val options: Options) {
                 val data = session!!.decrypt(result.data.string())
                 val doc = Jsoup.parse(data, Parser.xmlParser())
                 keepRetry = doc.getElementsByTag("interval").first()?.text() ?: ""
-
-                // 再次检查keepRetry值是否正确，不正确则设置为默认值60
-                if (keepRetry.isBlank() || keepRetry.toInt() <= 0) {
-                    keepRetry = "60"
-                    logger.warn("KeepRetry value is incorrect after heartbeat, setting to default: $keepRetry")
-                }
             }
 
             is NetResult.Error -> {
