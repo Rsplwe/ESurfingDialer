@@ -165,6 +165,7 @@ class Client(private val options: Options) {
                 if (keepRetry.isBlank() || keepRetry.toInt() <= 0) {
                     keepRetry = "60"
                     logger.warn("KeepRetry value is incorrect, setting to default: $keepRetry")
+                    logger.warn("If you are using proxy software such as Clash, please close it and try again.")
                 }
 
                 logger.info("Keep Url: $keepUrl")
@@ -203,6 +204,7 @@ class Client(private val options: Options) {
                 if (keepRetry.isBlank() || keepRetry.toInt() <= 0) {
                     keepRetry = "60"
                     logger.warn("KeepRetry value is incorrect after heartbeat, setting to default: $keepRetry")
+                    logger.warn("If you are using proxy software such as Clash, please close it and try again.")
                 }
             }
 
