@@ -2,6 +2,13 @@
 [![GitHub License](https://img.shields.io/github/license/Rsplwe/ESurfingDialer?style=flat-square)](https://github.com/Rsplwe/ESurfingDialer/blob/main/LICENSE)
 
 广东电信天翼校园（ZSM验证）登入认证客户端
+> 为保障项目安全，请不要随意在各个社交平台广泛传播该项目，包括不限于Bilibili、QQ、X（Twitter）、Discord
+>
+> 个人兴趣而制作，开发目的在于学习和探索，一切开发皆在学习，请勿用于非法用途
+>
+> 因使用本项目产生的一切问题与后果由使用者自行承担，项目开发者不承担任何责任
+>
+> 因项目特殊性，随时会删档
 
 ### 运行环境
 * Java 21 及以上
