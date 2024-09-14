@@ -42,18 +42,6 @@ class AndroidMock {
         return DynarmicFactory(false)
     }
 
-
-    companion object {
-        private var instance: AndroidMock? = null
-
-        fun getInstance(): AndroidMock {
-            if (instance == null) {
-                instance = AndroidMock()
-            }
-            return instance!!
-        }
-    }
-
     fun getJniMethod(): DvmClass {
         return this.jniMethod
     }

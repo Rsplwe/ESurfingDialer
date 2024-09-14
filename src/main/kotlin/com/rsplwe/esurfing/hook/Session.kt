@@ -10,13 +10,17 @@ import java.util.*
 class Session(zsm: ByteArray) {
 
     private val logger: Logger = Logger.getLogger(Session::class.java)
-    private val emulator: AndroidEmulator = AndroidMock.getInstance().getEmulator()
-    private val method: DvmClass = AndroidMock.getInstance().getJniMethod()
+    private val mock: AndroidMock
+    private val emulator: AndroidEmulator
+    private val method: DvmClass
     private val sessionId: Long
     private val clientId: String
 
     init {
         logger.info("Initializing Session...")
+        mock = AndroidMock()
+        emulator = mock.getEmulator()
+        method = mock.getJniMethod()
         sessionId = this.load(zsm)
         clientId = UUID.randomUUID().toString().lowercase()
         States.algoId = this.getAlgoId()
