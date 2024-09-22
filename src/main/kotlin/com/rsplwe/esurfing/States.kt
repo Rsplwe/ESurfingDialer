@@ -4,7 +4,6 @@ import com.rsplwe.esurfing.utils.randomMACAddress
 import java.io.File
 import java.util.UUID
 
-
 object States {
 
     val rootDir = File("target")

@@ -55,7 +55,9 @@ class Client(private val options: Options) {
     }
 
     private fun authorization() {
-        var code = checkSMSVerify()
+        var code = if (options.smsCode.isBlank()) checkSMSVerify() else options.smsCode
+        println("SMS Code is: $code")
+
         session?.free()
         initSession()
         if ((session?.getSessionId() ?: 0) == 0.toLong()) {
@@ -89,7 +91,6 @@ class Client(private val options: Options) {
                 if (input != null) {
                     val code = input.trim()
                     if (code.isNotBlank()) {
-                        println("Code is: $code")
                         return code
                     }
                 }

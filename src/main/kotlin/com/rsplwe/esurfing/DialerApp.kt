@@ -27,8 +27,14 @@ object DialerApp {
             .hasArg()
             .required(true)
             .desc("Login User Password").build()
+        val smsCode = Option.builder("s").longOpt("sms")
+            .argName("sms")
+            .hasArg()
+            .required(false)
+            .desc("Pre-enter verification code").build()
         options.addOption(loginUser)
         options.addOption(loginPassword)
+        options.addOption(smsCode)
 
         val cmd: CommandLine
         val parser: CommandLineParser = DefaultParser()
@@ -42,7 +48,13 @@ object DialerApp {
             exitProcess(1)
         }
 
-        val client = Client(Options(cmd.getOptionValue("user"), cmd.getOptionValue("password")))
+        val client = Client(
+            Options(
+                cmd.getOptionValue("user"),
+                cmd.getOptionValue("password"),
+                cmd.getOptionValue("sms") ?: "",
+            )
+        )
 
         Runtime.getRuntime().addShutdownHook(object : Thread() {
             override fun run() {
