@@ -40,7 +40,7 @@ CMD ["./run.sh"]
 run.sh
 ```bash
 #!/bin/sh
-java -jar client.jar -u ${DIALER_USER} -p ${DIALER_PASSWORD} -d
+java -jar client.jar -u ${DIALER_USER} -p ${DIALER_PASSWORD}
 ```
 
 
