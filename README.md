@@ -14,6 +14,9 @@
 java -jar client.jar -u <用户名/手机号> -p <密码>
 ````
 
+### 详细部署教程
+[ESurfingDialerTutorial](https://github.com/EricZhou05/ESurfingDialerTutorial)
+
 ### OpenWrt 部署
 目前仅支持 x86_64 及 ARMv8 架构运行。
 
