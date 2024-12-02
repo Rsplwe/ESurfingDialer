@@ -22,7 +22,7 @@ dependencies {
     implementation("com.github.yescallop:fluent-uri:d8e12f23af")
     implementation("commons-cli:commons-cli:1.9.0")
     implementation("commons-codec:commons-codec:1.17.1")
-    implementation("org.jsoup:jsoup:1.18.2")
+    implementation("org.jsoup:jsoup:1.18.3")
     implementation("com.google.code.gson:gson:2.11.0")
 }
 
