@@ -51,11 +51,11 @@ fun detectConfig(): ConnectivityStatus {
 
             doc.getElementsByTag("funcfg").first()?.children()?.forEach {
                 if (it.attribute("enable") != null
-                    && it.attribute("enable").value.equals("1")
+                    && it.attribute("enable")!!.value.equals("1")
                     && it.attribute("url") != null
-                    && it.attribute("url").value.isNotEmpty()
+                    && it.attribute("url")!!.value.isEmpty()
                 ) {
-                    States.extraCfgUrl[it.tagName()] = it.attribute("url").value
+                    States.extraCfgUrl[it.tagName()] = it.attribute("url")!!.value
                 }
             }
             if (States.authUrl.isEmpty() || States.ticketUrl.isEmpty()) {
@@ -91,7 +91,6 @@ fun getVerifyCode(username: String): Boolean {
 fun requestVerifyCode(username: String, type: String, success: String): Boolean {
     val url = States.extraCfgUrl[type]
     if (url.isNullOrEmpty()) return false
-    val type = "application/json".toMediaTypeOrNull()
     val currentTimeMillis = System.currentTimeMillis().toString()
     val body = Gson().toJson(
         RequireVerificate(
@@ -100,7 +99,7 @@ fun requestVerifyCode(username: String, type: String, success: String): Boolean 
             timestamp = currentTimeMillis,
             authenticator = DigestUtils.md5Hex(States.schoolId + currentTimeMillis + Constants.AUTH_KEY).uppercase()
         )
-    ).toRequestBody(type)
+    ).toRequestBody("application/json".toMediaTypeOrNull())
     val request = Request.Builder()
         .removeHeader("User-Agent")
         .addHeader("User-Agent", Constants.USER_AGENT)

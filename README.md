@@ -4,7 +4,7 @@
 广东电信天翼校园（ZSM验证）登入认证客户端
 
 ### 运行环境
-* Java 21 及以上
+* Java 23 及以上
 * x86_64 或 ARMv8
 * glibc (linux only)
 * 内存 ≥ 200M
@@ -22,7 +22,7 @@ java -jar client.jar -u <用户名/手机号> -p <密码>
 
 默认 OpenWRT 环境为 musl 运行时，请使用安装 Docker 软件包部署。当以 Docker 运行时，请包含 `--network host` 参数
 
-推荐容器：openjdk:21
+推荐容器：openjdk:23
 
 ![](imgs/01.png)
 ![](imgs/02.png)
@@ -34,7 +34,7 @@ docker run -itd -e DIALER_USER=<用户名/手机号> -e DIALER_PASSWORD=<密码>
 
 Dockerfile
 ```dockerfile
-FROM openjdk:21
+FROM openjdk:23
 WORKDIR /app
 COPY run.sh /app
 COPY client.jar /app
@@ -48,7 +48,7 @@ java -jar client.jar -u ${DIALER_USER} -p ${DIALER_PASSWORD}
 
 
 ### 构建
-需要 Java 版本 >= 20
+需要 Java 版本 >= 23
 ```bash
 ./gradlew shadowJar
 ```
