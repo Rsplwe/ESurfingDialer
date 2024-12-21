@@ -55,7 +55,7 @@ class Client(private val options: Options) {
     }
 
     private fun authorization() {
-        var code = if (options.smsCode.isBlank()) checkSMSVerify() else options.smsCode
+        val code = options.smsCode.ifBlank { checkSMSVerify() }
         println("SMS Code is: $code")
 
         session?.free()
@@ -87,7 +87,7 @@ class Client(private val options: Options) {
             logger.info("This login requires a SMS verification code.")
             while (true) {
                 print("Input Code: ")
-                val input = readLine()
+                val input = readlnOrNull()
                 if (input != null) {
                     val code = input.trim()
                     if (code.isNotBlank()) {

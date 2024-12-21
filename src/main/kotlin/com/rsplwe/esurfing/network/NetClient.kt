@@ -46,10 +46,7 @@ class RedirectInterceptor : Interceptor {
                 logger.info("Add Header -> CDC-Domain: ${States.domain}")
             }
 
-            val location = response.header("Location")
-            if (location == null) {
-                break
-            }
+            val location = response.header("Location") ?: break
 
             val prepare = request.newBuilder().url(location)
             if (States.schoolId.isNotEmpty()) {
