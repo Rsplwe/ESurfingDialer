@@ -22,7 +22,7 @@ class RedirectInterceptor : Interceptor {
         var request = chain.request()
         var response = chain.proceed(request)
 
-        while (response.isRedirect && redirectCount < 10) {
+        while (response.isRedirect && redirectCount < 5) {
             redirectCount++
             response.close()
             logger.info("Redirect #${redirectCount}")

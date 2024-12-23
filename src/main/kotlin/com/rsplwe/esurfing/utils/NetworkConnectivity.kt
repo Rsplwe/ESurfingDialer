@@ -50,10 +50,8 @@ fun detectConfig(): ConnectivityStatus {
             States.ticketUrl = doc.getElementsByTag("ticket-url").first()?.text() ?: ""
 
             doc.getElementsByTag("funcfg").first()?.children()?.forEach {
-                if (it.attribute("enable") != null
-                    && it.attribute("enable")!!.value.equals("1")
-                    && it.attribute("url") != null
-                    && it.attribute("url")!!.value.isEmpty()
+                if ((it.attribute("enable")?.value ?: "") == "1"
+                    && (it.attribute("url")?.value ?: "").isNotEmpty()
                 ) {
                     States.extraCfgUrl[it.tagName()] = it.attribute("url")!!.value
                 }
@@ -103,7 +101,7 @@ fun requestVerifyCode(username: String, type: String, success: String): Boolean 
     val request = Request.Builder()
         .removeHeader("User-Agent")
         .addHeader("User-Agent", Constants.USER_AGENT)
-        .addHeader("Accept", Constants.REQUEST_ACCEPT)
+        .addHeader("Accept", "okhttp/3.4.1")
         .url(url)
         .post(body)
 

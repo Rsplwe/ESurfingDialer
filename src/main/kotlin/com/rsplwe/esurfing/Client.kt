@@ -22,8 +22,6 @@ class Client(private val options: Options) {
     private var termUrl = ""
     private var keepRetry = ""
 
-    var session: Session? = null
-
     @Volatile
     var tick: Long = 0
 
@@ -32,7 +30,7 @@ class Client(private val options: Options) {
             val networkStatus = detectConfig()
             when (networkStatus) {
                 SUCCESS -> {
-                    if (session != null) {
+                    if (Session.isInitialized() && States.isLogged) {
                         if ((System.currentTimeMillis() - tick) >= (keepRetry.toLong() * 1000)) {
                             logger.info("Send Keep Packet")
                             heartbeat(ticket)
@@ -41,16 +39,20 @@ class Client(private val options: Options) {
                         }
                     } else {
                         logger.info("The network has been connected.")
-                        sleep(5000)
                     }
+                    sleep(1000)
                 }
 
-                REQUIRE_AUTHORIZATION -> authorization()
-                else -> {
+                REQUIRE_AUTHORIZATION -> {
+                    States.isLogged = false
+                    authorization()
+                }
+
+                REQUEST_ERROR -> {
+                    logger.error("Request Error")
                     sleep(5000)
                 }
             }
-            sleep(1000)
         }
     }
 
@@ -58,14 +60,19 @@ class Client(private val options: Options) {
         val code = options.smsCode.ifBlank { checkSMSVerify() }
         println("SMS Code is: $code")
 
-        session?.free()
-        initSession()
-        if ((session?.getSessionId() ?: 0) == 0.toLong()) {
-            logger.error("Failed to initialize session.")
-            isRunning = false
+        if (Session.isInitialized()) {
+            Session.free()
         }
 
-        logger.info("Session ID: ${session?.getSessionId()}")
+        initSession()
+        if (Session.getSessionId() == 0.toLong()) {
+            logger.error("Failed to initialize session.")
+            isRunning = false
+            return
+        }
+
+        logger.info("Algo Id: ${Session.getAlgoId()}")
+        logger.info("Session Id: ${Session.getSessionId()}")
         logger.info("Client IP: ${States.userIp}")
         logger.info("AC IP: ${States.acIp}")
 
@@ -75,10 +82,12 @@ class Client(private val options: Options) {
         login(code)
         if (keepUrl.isEmpty()) {
             logger.error("KeepUrl is empty.")
-            session?.free()
+            Session.free()
             isRunning = false
+            return
         }
         tick = System.currentTimeMillis()
+        States.isLogged = true
         logger.info("The login has been authorized.")
     }
 
@@ -100,9 +109,9 @@ class Client(private val options: Options) {
     }
 
     private fun initSession() {
-        when (val result = post(States.ticketUrl, States.algoId)) {
+        when (val result = post(States.ticketUrl, "00000000-0000-0000-0000-000000000000")) {
             is NetResult.Success -> {
-                session = Session(result.data.bytes())
+                Session.initialize(result.data.bytes())
             }
 
             is NetResult.Error -> {
@@ -126,9 +135,9 @@ class Client(private val options: Options) {
                 <gwip>${States.acIp}</gwip>
             </request>
         """.trimIndent()
-        when (val result = post(States.ticketUrl, session!!.encrypt(payload))) {
+        when (val result = post(States.ticketUrl, Session.encrypt(payload))) {
             is NetResult.Success -> {
-                val data = session!!.decrypt(result.data.string())
+                val data = Session.decrypt(result.data.string())
                 val doc = Jsoup.parse(data, Parser.xmlParser())
                 return doc.getElementsByTag("ticket").first()?.text() ?: ""
             }
@@ -138,6 +147,7 @@ class Client(private val options: Options) {
             }
         }
     }
+
 
     private fun login(code: String = "") {
         val verify = if (code.isBlank()) "" else "<verify>${code}</verify>"
@@ -153,9 +163,9 @@ class Client(private val options: Options) {
                 $verify
             </request>
         """.trimIndent()
-        when (val result = post(States.authUrl, session!!.encrypt(payload))) {
+        when (val result = post(States.authUrl, Session.encrypt(payload))) {
             is NetResult.Success -> {
-                val data = session!!.decrypt(result.data.string())
+                val data = Session.decrypt(result.data.string())
                 val doc = Jsoup.parse(data, Parser.xmlParser())
 
                 keepUrl = doc.getElementsByTag("keep-url").first()?.text() ?: ""
@@ -188,9 +198,9 @@ class Client(private val options: Options) {
                 <ostag>${Constants.HOST_NAME}</ostag>
             </request>
         """.trimIndent()
-        when (val result = post(keepUrl, session!!.encrypt(payload))) {
+        when (val result = post(keepUrl, Session.encrypt(payload))) {
             is NetResult.Success -> {
-                val data = session!!.decrypt(result.data.string())
+                val data = Session.decrypt(result.data.string())
                 val doc = Jsoup.parse(data, Parser.xmlParser())
                 keepRetry = doc.getElementsByTag("interval").first()?.text() ?: ""
             }
@@ -216,7 +226,7 @@ class Client(private val options: Options) {
                 <ostag>${Constants.HOST_NAME}</ostag>
             </request>
         """.trimIndent()
-        when (val result = post(termUrl, session!!.encrypt(payload))) {
+        when (val result = post(termUrl, Session.encrypt(payload))) {
             is NetResult.Success -> {}
             is NetResult.Error -> {
                 error("Error: ${result.exception}")

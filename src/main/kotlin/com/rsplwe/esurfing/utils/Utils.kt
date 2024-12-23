@@ -34,3 +34,8 @@ fun randomMACAddress(): String {
     }
     return sb.toString()
 }
+fun randomString(length: Int): String {
+    val charset = ('A'..'Z') + ('a'..'z') + ('0'..'9')
+    return List(length) { charset.random() }
+        .joinToString("")
+}

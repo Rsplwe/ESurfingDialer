@@ -24,4 +24,5 @@ object States {
     var ticketUrl = ""
     var authUrl = ""
     var extraCfgUrl = HashMap<String, String>()
+    var isLogged = false
 }

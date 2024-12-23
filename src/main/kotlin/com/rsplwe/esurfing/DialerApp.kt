@@ -1,6 +1,7 @@
 package com.rsplwe.esurfing
 
 import com.rsplwe.esurfing.States.isRunning
+import com.rsplwe.esurfing.hook.Session
 import org.apache.commons.cli.*
 import org.apache.commons.cli.Options
 import org.apache.log4j.Logger
@@ -62,8 +63,11 @@ object DialerApp {
                     if (isRunning) {
                         isRunning = false
                     }
-                    if (client.session != null) {
-                        client.term()
+                    if (Session.isInitialized()) {
+                        if (States.isLogged){
+                            client.term()
+                        }
+                        Session.free()
                     }
                     println("Shutting down...")
                 } catch (e: InterruptedException) {
