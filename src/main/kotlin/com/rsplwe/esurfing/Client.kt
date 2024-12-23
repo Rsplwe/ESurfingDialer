@@ -71,6 +71,7 @@ class Client(private val options: Options) {
             return
         }
 
+        logger.info("Key: ${Session.getKey()}")
         logger.info("Algo Id: ${Session.getAlgoId()}")
         logger.info("Session Id: ${Session.getSessionId()}")
         logger.info("Client IP: ${States.userIp}")
