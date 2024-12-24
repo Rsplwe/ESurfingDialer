@@ -31,11 +31,15 @@ class Client(private val options: Options) {
             when (networkStatus) {
                 SUCCESS -> {
                     if (Session.isInitialized() && States.isLogged) {
-                        if ((System.currentTimeMillis() - tick) >= (keepRetry.toLong() * 1000)) {
-                            logger.info("Send Keep Packet")
-                            heartbeat(ticket)
-                            logger.info("Next Retry: $keepRetry")
-                            tick = System.currentTimeMillis()
+                        try {
+                            if ((System.currentTimeMillis() - tick) >= (keepRetry.toLong() * 1000)) {
+                                logger.info("Send Keep Packet")
+                                heartbeat(ticket)
+                                logger.info("Next Retry: $keepRetry")
+                                tick = System.currentTimeMillis()
+                            }
+                        } catch (e: Exception) {
+                            States.isLogged = false
                         }
                     } else {
                         logger.info("The network has been connected.")
