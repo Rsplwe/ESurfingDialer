@@ -68,8 +68,7 @@ class Client(private val options: Options) {
             Session.free()
         }
 
-        States.resetAlgoId()
-        States.refreshClientId()
+        States.refreshStates()
 
         initSession()
         if (Session.getSessionId() == 0.toLong()) {

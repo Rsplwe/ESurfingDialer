@@ -76,6 +76,7 @@ object DialerApp {
                 }
             }
         })
+        States.refreshStates()
         client.run()
     }
 }
