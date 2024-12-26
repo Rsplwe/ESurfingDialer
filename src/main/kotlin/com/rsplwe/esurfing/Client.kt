@@ -68,6 +68,9 @@ class Client(private val options: Options) {
             Session.free()
         }
 
+        States.resetAlgoId()
+        States.refreshClientId()
+
         initSession()
         if (Session.getSessionId() == 0.toLong()) {
             logger.error("Failed to initialize session.")
@@ -114,7 +117,7 @@ class Client(private val options: Options) {
     }
 
     private fun initSession() {
-        when (val result = post(States.ticketUrl, "00000000-0000-0000-0000-000000000000")) {
+        when (val result = post(States.ticketUrl, States.algoId)) {
             is NetResult.Success -> {
                 Session.initialize(result.data.bytes())
             }

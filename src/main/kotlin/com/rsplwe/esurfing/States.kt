@@ -8,7 +8,7 @@ object States {
 
     val rootDir = File("target")
 
-    var clientId = UUID.randomUUID().toString().lowercase()
+    var clientId = ""
     var algoId = "00000000-0000-0000-0000-000000000000"
     var macAddress = randomMACAddress()
     var ticket = ""
@@ -25,4 +25,12 @@ object States {
     var authUrl = ""
     var extraCfgUrl = HashMap<String, String>()
     var isLogged = false
+
+    fun refreshClientId() {
+        this.clientId = UUID.randomUUID().toString().lowercase()
+    }
+
+    fun resetAlgoId(){
+        this.algoId = "00000000-0000-0000-0000-000000000000"
+    }
 }
