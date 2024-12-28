@@ -22,7 +22,7 @@ java -jar client.jar -u <用户名/手机号> -p <密码>
 
 默认 OpenWRT 环境为 musl 运行时，请使用安装 Docker 软件包部署。当以 Docker 运行时，请包含 `--network host` 参数
 
-推荐容器：openjdk:23
+推荐容器：amazoncorretto:23
 
 ![](imgs/01.png)
 ![](imgs/02.png)
@@ -34,7 +34,7 @@ docker run -itd -e DIALER_USER=<用户名/手机号> -e DIALER_PASSWORD=<密码>
 
 Dockerfile
 ```dockerfile
-FROM openjdk:23
+FROM amazoncorretto:23
 WORKDIR /app
 COPY run.sh /app
 COPY client.jar /app
