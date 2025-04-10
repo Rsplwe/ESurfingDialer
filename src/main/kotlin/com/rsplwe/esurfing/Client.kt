@@ -2,7 +2,6 @@ package com.rsplwe.esurfing
 
 import com.rsplwe.esurfing.States.isRunning
 import com.rsplwe.esurfing.States.ticket
-import com.rsplwe.esurfing.hook.Session
 import com.rsplwe.esurfing.network.NetResult
 import com.rsplwe.esurfing.network.post
 import com.rsplwe.esurfing.utils.ConnectivityStatus.*
@@ -30,7 +29,7 @@ class Client(private val options: Options) {
             val networkStatus = detectConfig()
             when (networkStatus) {
                 SUCCESS -> {
-                    if (Session.isInitialized() && States.isLogged) {
+                    if (States.isLogged) {
                         try {
                             if ((System.currentTimeMillis() - tick) >= (keepRetry.toLong() * 1000)) {
                                 logger.info("Send Keep Packet")
@@ -38,7 +37,7 @@ class Client(private val options: Options) {
                                 logger.info("Next Retry: $keepRetry")
                                 tick = System.currentTimeMillis()
                             }
-                        } catch (e: Exception) {
+                        } catch (_: Exception) {
                             States.isLogged = false
                         }
                     } else {
@@ -64,22 +63,20 @@ class Client(private val options: Options) {
         val code = options.smsCode.ifBlank { checkSMSVerify() }
         println("SMS Code is: $code")
 
-        if (Session.isInitialized()) {
-            Session.free()
+        var retryCount = 0
+        while (!Session.isInitialized()) {
+            if (retryCount >= 5) {
+                logger.error("Unable to find algorithm implementation, please restart the application or try version 1.8.0 or below.")
+                logger.error("Release: https://github.com/Rsplwe/ESurfingDialer/releases")
+                isRunning = false
+                return
+            }
+            States.refreshStates()
+            initSession()
+            retryCount++
         }
 
-        States.refreshStates()
-
-        initSession()
-        if (Session.getSessionId() == 0.toLong()) {
-            logger.error("Failed to initialize session.")
-            isRunning = false
-            return
-        }
-
-        logger.info("Key: ${Session.getKey()}")
         logger.info("Algo Id: ${Session.getAlgoId()}")
-        logger.info("Session Id: ${Session.getSessionId()}")
         logger.info("Client IP: ${States.userIp}")
         logger.info("AC IP: ${States.acIp}")
 
