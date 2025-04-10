@@ -5,6 +5,7 @@ import javax.crypto.Cipher
 import javax.crypto.spec.IvParameterSpec
 import javax.crypto.spec.SecretKeySpec
 
+@OptIn(ExperimentalStdlibApi::class)
 class AESCBC(
     private val key1: ByteArray,
     private val key2: ByteArray,
@@ -34,14 +35,13 @@ class AESCBC(
         return decrypt
     }
 
-    @OptIn(ExperimentalStdlibApi::class)
+
     override fun encrypt(text: String): String {
         val r1 = aesEncrypt(text.toByteArray(), key1)
         val r2 = aesEncrypt(r1, key2)
         return r2.toHexString(format = HexFormat.UpperCase)
     }
 
-    @OptIn(ExperimentalStdlibApi::class)
     override fun decrypt(hex: String): String {
         val bytes = hex.hexToByteArray()
         val r1 = aesDecrypt(bytes.copyOfRange(16, bytes.size), key2)
