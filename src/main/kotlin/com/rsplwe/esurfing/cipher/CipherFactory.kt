@@ -1,16 +1,8 @@
 package com.rsplwe.esurfing.cipher
 
 import com.rsplwe.esurfing.cipher.impl.*
-import org.bouncycastle.jce.provider.BouncyCastleProvider
-import java.security.Security
 
 object CipherFactory {
-
-    init {
-        if (Security.getProvider(BouncyCastleProvider.PROVIDER_NAME) == null) {
-            Security.addProvider(BouncyCastleProvider())
-        }
-    }
 
     fun getInstance(type: String): CipherInterface {
         return when (type) {

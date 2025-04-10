@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "com.rsplwe.esurfing"
-version = "1.8.0"
+version = "1.9.3"
 
 repositories {
     mavenCentral()

@@ -16,15 +16,13 @@ import java.util.concurrent.TimeUnit
 class RedirectInterceptor : Interceptor {
 
     private val logger: Logger = Logger.getLogger(RedirectInterceptor::class.java)
-    private var redirectCount = 0
 
     override fun intercept(chain: Interceptor.Chain): Response {
         var request = chain.request()
         var response = chain.proceed(request)
+        var redirectCount = 0
 
-        while (response.isRedirect && redirectCount < 5) {
-            redirectCount++
-            response.close()
+        while (response.isRedirect && redirectCount++ < 5) {
             logger.info("Redirect #${redirectCount}")
             logger.info("Url: ${request.url}")
             logger.info("Response Code: ${response.code}")
@@ -58,6 +56,7 @@ class RedirectInterceptor : Interceptor {
             if (States.area.isNotEmpty()) {
                 request.header("CDC-Area") ?: prepare.addHeader("CDC-Area", States.area)
             }
+            response.close()
             request = prepare.build()
             response = chain.proceed(request)
         }

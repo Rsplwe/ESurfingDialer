@@ -20,6 +20,7 @@ class Client(private val options: Options) {
     private var keepUrl = ""
     private var termUrl = ""
     private var keepRetry = ""
+    private var retryCount = 0
 
     @Volatile
     var tick: Long = 0
@@ -62,19 +63,18 @@ class Client(private val options: Options) {
     private fun authorization() {
         val code = options.smsCode.ifBlank { checkSMSVerify() }
         println("SMS Code is: $code")
+        initSession()
 
-        var retryCount = 0
-        while (!Session.isInitialized()) {
+        if (!Session.isInitialized()){
             if (retryCount >= 5) {
                 logger.error("Unable to find algorithm implementation, please restart the application or try version 1.8.0 or below.")
                 logger.error("Release: https://github.com/Rsplwe/ESurfingDialer/releases")
                 isRunning = false
-                return
             }
-            States.refreshStates()
-            initSession()
             retryCount++
+            return
         }
+        retryCount = 0
 
         logger.info("Algo Id: ${Session.getAlgoId()}")
         logger.info("Client IP: ${States.userIp}")

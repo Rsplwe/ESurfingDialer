@@ -4,6 +4,8 @@ import com.rsplwe.esurfing.States.isRunning
 import org.apache.commons.cli.*
 import org.apache.commons.cli.Options
 import org.apache.log4j.Logger
+import org.bouncycastle.jce.provider.BouncyCastleProvider
+import java.security.Security
 import kotlin.system.exitProcess
 
 object DialerApp {
@@ -12,6 +14,7 @@ object DialerApp {
 
     @JvmStatic
     fun main(args: Array<String>) {
+        Security.addProvider(BouncyCastleProvider())
         val options = Options()
         val loginUser = Option.builder("u").longOpt("user")
             .argName("user")
