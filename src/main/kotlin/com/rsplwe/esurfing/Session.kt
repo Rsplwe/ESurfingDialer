@@ -4,18 +4,15 @@ import com.rsplwe.esurfing.cipher.CipherFactory
 import com.rsplwe.esurfing.cipher.CipherInterface
 import org.apache.log4j.Logger
 import java.lang.IllegalArgumentException
-import java.util.UUID
 
 object Session {
 
     private val logger: Logger = Logger.getLogger(Session::class.java)
-    private lateinit var clientId: String
     private var initialized = false
     private lateinit var cipher: CipherInterface
 
     fun initialize(zsm: ByteArray) {
         logger.info("Initializing Session...")
-        clientId = UUID.randomUUID().toString().lowercase()
         initialized = load(zsm)
     }
 

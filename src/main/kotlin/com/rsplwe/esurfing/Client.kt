@@ -29,7 +29,7 @@ class Client(private val options: Options) {
             val networkStatus = detectConfig()
             when (networkStatus) {
                 SUCCESS -> {
-                    if (States.isLogged) {
+                    if (Session.isInitialized() && States.isLogged) {
                         try {
                             if ((System.currentTimeMillis() - tick) >= (keepRetry.toLong() * 1000)) {
                                 logger.info("Send Keep Packet")
