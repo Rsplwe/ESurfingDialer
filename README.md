@@ -3,11 +3,13 @@
 
 广东电信天翼校园（ZSM验证）登入认证客户端
 
+### 旧版（基于 unidbg）
+* [分支](https://github.com/Rsplwe/ESurfingDialer/tree/sim)
+* [Release](https://github.com/Rsplwe/ESurfingDialer/releases/tag/v1.8.0)
+
 ### 运行环境
 * Java 23 及以上
-* x86_64 或 ARMv8
-* glibc (linux only)
-* 内存 ≥ 200M
+* 内存 ≥ 50M
 
 ### 使用
 ```bash
@@ -18,9 +20,7 @@ java -jar client.jar -u <用户名/手机号> -p <密码>
 [ESurfingDialerTutorial](https://github.com/EricZhou05/ESurfingDialerTutorial)
 
 ### OpenWrt 部署
-目前仅支持 x86_64 及 ARMv8 架构运行。
-
-默认 OpenWRT 环境为 musl 运行时，请使用安装 Docker 软件包部署。当以 Docker 运行时，请包含 `--network host` 参数
+当以 Docker 运行时，请包含 `--network host` 参数
 
 推荐容器：amazoncorretto:23
 
