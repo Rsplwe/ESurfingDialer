@@ -42,6 +42,12 @@ object CipherFactory {
                 key = KeyData.key_ED382482_F72C_4C41_A76D_28EEA0F1F2AF
             )
 
+            "B3047D4E-67DF-4864-A6A5-DF9B9E525C79" -> ModXTEA(
+                key1 = KeyData.key1_B3047D4E_67DF_4864_A6A5_DF9B9E525C79,
+                key2 = KeyData.key2_B3047D4E_67DF_4864_A6A5_DF9B9E525C79,
+                key3 = KeyData.key3_B3047D4E_67DF_4864_A6A5_DF9B9E525C79
+            )
+
             else -> throw IllegalArgumentException("Unknown algorithm: $type")
         }
     }

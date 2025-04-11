@@ -79,4 +79,17 @@ object KeyData {
         0x53, 0x2f, 0x79, 0x4a, 0x4e, 0x79, 0x74, 0x4d, 0x67, 0x66, 0x57, 0x5a, 0x2d, 0x44, 0x5c, 0x57
     )
 
+    // ----------------------------------------------------------------
+    //  Algo Id: B3047D4E-67DF-4864-A6A5-DF9B9E525C79 (XTEA Non-standard)
+    // ----------------------------------------------------------------
+    val key1_B3047D4E_67DF_4864_A6A5_DF9B9E525C79 = intArrayOf(
+        0x7a7a676a, 0x277e4a73, 0x3e43296c, 0x577d7d7a,
+    )
+    val key2_B3047D4E_67DF_4864_A6A5_DF9B9E525C79 = intArrayOf(
+        0x3d3c695f, 0x71797a74, 0x445f5763, 0x6f692765,
+    )
+    val key3_B3047D4E_67DF_4864_A6A5_DF9B9E525C79 = intArrayOf(
+        0x5b5a683d, 0x2e572a77, 0x4a474465, 0x663d7e5c
+    )
+
 }
