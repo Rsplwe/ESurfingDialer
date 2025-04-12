@@ -15,6 +15,10 @@
 ```bash
 java -jar client.jar -u <用户名/手机号> -p <密码>
 ````
+### 新增一键启动
+star.zip
+内置教程
+
 
 ### 详细部署教程
 [ESurfingDialerTutorial](https://github.com/EricZhou05/ESurfingDialerTutorial)
