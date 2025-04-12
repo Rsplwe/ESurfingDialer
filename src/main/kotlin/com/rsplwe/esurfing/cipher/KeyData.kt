@@ -73,7 +73,7 @@ object KeyData {
     )
 
     // ----------------------------------------------------------------
-    //  Algo Id: ED382482-F72C-4C41-A76D-28EEA0F1F2AF (SM4/ECB/PKCS5Padding)
+    //  Algo Id: ED382482-F72C-4C41-A76D-28EEA0F1F2AF
     // ----------------------------------------------------------------
     val key_ED382482_F72C_4C41_A76D_28EEA0F1F2AF = byteArrayOf(
         0x53, 0x2f, 0x79, 0x4a, 0x4e, 0x79, 0x74, 0x4d, 0x67, 0x66, 0x57, 0x5a, 0x2d, 0x44, 0x5c, 0x57
@@ -90,6 +90,22 @@ object KeyData {
     )
     val key3_B3047D4E_67DF_4864_A6A5_DF9B9E525C79 = intArrayOf(
         0x5b5a683d, 0x2e572a77, 0x4a474465, 0x663d7e5c
+    )
+
+    // ----------------------------------------------------------------
+    //  Algo Id: C32C68F9-CA81-4260-A329-BBAFD1A9CCD1 (XTEA-IV Non-standard)
+    // ----------------------------------------------------------------
+    val key1_C32C68F9_CA81_4260_A329_BBAFD1A9CCD1 = intArrayOf(
+        0x796d7855, 0x297b2355, 0x587d726e, 0x4d3d4423
+    )
+    val key2_C32C68F9_CA81_4260_A329_BBAFD1A9CCD1 = intArrayOf(
+        0x7c70525d, 0x5a585d3d, 0x413e4029, 0x28755d6a
+    )
+    val key3_C32C68F9_CA81_4260_A329_BBAFD1A9CCD1 = intArrayOf(
+        0x425e5f6e, 0x46754e24, 0x507b233d, 0x2d644641
+    )
+    val iv_C32C68F9_CA81_4260_A329_BBAFD1A9CCD1 = intArrayOf(
+        0x544c2f3f, 0x6f485121
     )
 
 }

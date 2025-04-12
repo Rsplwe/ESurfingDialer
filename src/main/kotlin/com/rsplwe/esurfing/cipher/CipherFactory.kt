@@ -1,6 +1,14 @@
 package com.rsplwe.esurfing.cipher
 
-import com.rsplwe.esurfing.cipher.impl.*
+import com.rsplwe.esurfing.cipher.impl.AESCBC
+import com.rsplwe.esurfing.cipher.impl.AESECB
+import com.rsplwe.esurfing.cipher.impl.DESedeCBC
+import com.rsplwe.esurfing.cipher.impl.DESedeECB
+import com.rsplwe.esurfing.cipher.impl.ModXTEA
+import com.rsplwe.esurfing.cipher.impl.ModXTEAXTEAIV
+import com.rsplwe.esurfing.cipher.impl.SM4ECB
+import com.rsplwe.esurfing.cipher.impl.SM4CBC
+import com.rsplwe.esurfing.cipher.impl.ZUC
 
 object CipherFactory {
 
@@ -46,6 +54,13 @@ object CipherFactory {
                 key1 = KeyData.key1_B3047D4E_67DF_4864_A6A5_DF9B9E525C79,
                 key2 = KeyData.key2_B3047D4E_67DF_4864_A6A5_DF9B9E525C79,
                 key3 = KeyData.key3_B3047D4E_67DF_4864_A6A5_DF9B9E525C79
+            )
+
+            "C32C68F9-CA81-4260-A329-BBAFD1A9CCD1" -> ModXTEAXTEAIV(
+                key1 = KeyData.key1_C32C68F9_CA81_4260_A329_BBAFD1A9CCD1,
+                key2 = KeyData.key2_C32C68F9_CA81_4260_A329_BBAFD1A9CCD1,
+                key3 = KeyData.key3_C32C68F9_CA81_4260_A329_BBAFD1A9CCD1,
+                iv = KeyData.iv_C32C68F9_CA81_4260_A329_BBAFD1A9CCD1
             )
 
             else -> throw IllegalArgumentException("Unknown algorithm: $type")
