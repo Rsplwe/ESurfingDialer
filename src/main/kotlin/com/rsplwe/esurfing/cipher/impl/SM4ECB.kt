@@ -11,15 +11,10 @@ class SM4ECB(
 
     override fun encrypt(text: String): String {
         val bytes = text.toByteArray()
-        val paddedPlaintext = if (bytes.size % 16 == 0) {
-            bytes
-        } else {
-            bytes.copyOf((bytes.size / 16 + 1) * 16)
-        }
         val cipher = Cipher.getInstance("SM4/ECB/PKCS5Padding", "BC")
         val secretKey = SecretKeySpec(key, "SM4")
         cipher.init(Cipher.ENCRYPT_MODE, secretKey)
-        val encrypt = cipher.doFinal(paddedPlaintext)
+        val encrypt = cipher.doFinal(bytes)
         return encrypt.toHexString(HexFormat.UpperCase)
     }
 

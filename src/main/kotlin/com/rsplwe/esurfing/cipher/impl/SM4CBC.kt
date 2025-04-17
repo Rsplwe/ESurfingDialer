@@ -13,16 +13,11 @@ class SM4CBC(
 
     override fun encrypt(text: String): String {
         val bytes = text.toByteArray()
-        val paddedPlaintext = if (bytes.size % 16 == 0) {
-            bytes
-        } else {
-            bytes.copyOf((bytes.size / 16 + 1) * 16)
-        }
         val cipher = Cipher.getInstance("SM4/CBC/PKCS5Padding", "BC")
         val secretKey = SecretKeySpec(key, "SM4")
         val ivSpec = IvParameterSpec(iv)
         cipher.init(Cipher.ENCRYPT_MODE, secretKey, ivSpec)
-        val encrypt = cipher.doFinal(paddedPlaintext)
+        val encrypt = cipher.doFinal(bytes)
         return encrypt.toHexString(HexFormat.UpperCase)
     }
 
