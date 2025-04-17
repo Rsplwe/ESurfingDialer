@@ -3,7 +3,7 @@ package com.rsplwe.esurfing.cipher.impl
 import com.rsplwe.esurfing.cipher.CipherInterface
 
 @OptIn(ExperimentalStdlibApi::class)
-class ModXTEAXTEAIV(
+class ModXTEAIV(
     private val key1: IntArray,
     private val key2: IntArray,
     private val key3: IntArray,
