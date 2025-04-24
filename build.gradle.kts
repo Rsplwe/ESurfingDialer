@@ -20,7 +20,7 @@ dependencies {
     implementation("commons-cli:commons-cli:1.9.0")
     implementation("commons-codec:commons-codec:1.18.0")
     implementation("org.jsoup:jsoup:1.19.1")
-    implementation("com.google.code.gson:gson:2.13.0")
+    implementation("com.google.code.gson:gson:2.13.1")
 }
 
 kotlin {
