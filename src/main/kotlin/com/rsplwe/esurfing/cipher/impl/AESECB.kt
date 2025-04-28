@@ -16,7 +16,7 @@ class AESECB(
         } else {
             bytes.copyOf((bytes.size / 16 + 1) * 16)
         }
-        val cipher = Cipher.getInstance("AES/ECB/NoPadding", "BC")
+        val cipher = Cipher.getInstance("AES/ECB/NoPadding")
         val secretKey = SecretKeySpec(key, "AES")
         cipher.init(Cipher.ENCRYPT_MODE, secretKey)
         val encrypt = cipher.doFinal(paddedPlaintext)
@@ -24,7 +24,7 @@ class AESECB(
     }
 
     private fun aesDecrypt(bytes: ByteArray, key: ByteArray): ByteArray {
-        val cipher = Cipher.getInstance("AES/ECB/NoPadding", "BC")
+        val cipher = Cipher.getInstance("AES/ECB/NoPadding")
         val secretKey = SecretKeySpec(key, "AES")
         cipher.init(Cipher.DECRYPT_MODE, secretKey)
         val decrypt = cipher.doFinal(bytes)

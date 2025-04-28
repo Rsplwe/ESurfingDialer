@@ -18,7 +18,7 @@ class AESCBC(
         } else {
             bytes.copyOf((bytes.size / 16 + 1) * 16)
         }
-        val cipher = Cipher.getInstance("AES/CBC/NoPadding", "BC")
+        val cipher = Cipher.getInstance("AES/CBC/NoPadding")
         val secretKey = SecretKeySpec(key, "AES")
         val ivSpec = IvParameterSpec(iv)
         cipher.init(Cipher.ENCRYPT_MODE, secretKey, ivSpec)
@@ -27,7 +27,7 @@ class AESCBC(
     }
 
     private fun aesDecrypt(bytes: ByteArray, key: ByteArray): ByteArray {
-        val cipher = Cipher.getInstance("AES/CBC/NoPadding", "BC")
+        val cipher = Cipher.getInstance("AES/CBC/NoPadding")
         val secretKey = SecretKeySpec(key, "AES")
         val ivSpec = IvParameterSpec(iv)
         cipher.init(Cipher.DECRYPT_MODE, secretKey, ivSpec)

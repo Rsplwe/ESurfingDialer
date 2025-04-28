@@ -13,7 +13,6 @@ repositories {
 }
 
 dependencies {
-    implementation("org.bouncycastle:bcprov-jdk18on:1.80")
     implementation("org.slf4j:slf4j-log4j12:2.0.17")
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
     implementation("com.github.yescallop:fluent-uri:d8e12f23af")

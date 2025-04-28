@@ -38,6 +38,4 @@ class ModXTEA(
         }
         return blocks.dropLastWhile { it == 0.toByte() }.toByteArray().decodeToString()
     }
-
-
 }

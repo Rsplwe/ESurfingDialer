@@ -1,11 +1,7 @@
 package com.rsplwe.esurfing.cipher.impl
 
+import com.rsplwe.crypto.Zuc128
 import com.rsplwe.esurfing.cipher.CipherInterface
-import org.bouncycastle.crypto.CipherParameters
-import org.bouncycastle.crypto.StreamCipher
-import org.bouncycastle.crypto.engines.Zuc128Engine
-import org.bouncycastle.crypto.params.KeyParameter
-import org.bouncycastle.crypto.params.ParametersWithIV
 
 @OptIn(ExperimentalStdlibApi::class)
 class ZUC(
@@ -20,20 +16,19 @@ class ZUC(
         } else {
             bytes.copyOf((bytes.size / 4 + 1) * 4)
         }
-        return processZUC(true, paddedPlaintext).toHexString(HexFormat.UpperCase)
+        return processZUC(paddedPlaintext).toHexString(HexFormat.UpperCase)
     }
 
 
     override fun decrypt(hex: String): String {
         val bytes = hex.hexToByteArray()
-        return processZUC(false, bytes).dropLastWhile { it == 0.toByte() }.toByteArray().decodeToString()
+        return processZUC(bytes).dropLastWhile { it == 0.toByte() }.toByteArray().decodeToString()
     }
 
-    fun processZUC(forEncryption: Boolean, input: ByteArray): ByteArray {
-        val zuc: StreamCipher = Zuc128Engine()
-        val params: CipherParameters = ParametersWithIV(KeyParameter(key), iv)
+    fun processZUC(input: ByteArray): ByteArray {
+        val zuc = Zuc128()
         val output = ByteArray(input.size)
-        zuc.init(forEncryption, params)
+        zuc.init(key, iv)
         zuc.processBytes(input, 0, input.size, output, 0)
         return output
     }

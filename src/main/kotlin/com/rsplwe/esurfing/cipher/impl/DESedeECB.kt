@@ -16,7 +16,7 @@ class DESedeECB(
         } else {
             bytes.copyOf((bytes.size / 16 + 1) * 16)
         }
-        val cipher = Cipher.getInstance("DESede/ECB/NoPadding", "BC")
+        val cipher = Cipher.getInstance("DESede/ECB/NoPadding")
         val secretKey = SecretKeySpec(key, "DESede")
         cipher.init(Cipher.ENCRYPT_MODE, secretKey)
         val encrypt = cipher.doFinal(paddedPlaintext)
@@ -24,7 +24,7 @@ class DESedeECB(
     }
 
     private fun tripleDesDecrypt(bytes: ByteArray, key: ByteArray): ByteArray {
-        val cipher = Cipher.getInstance("DESede/ECB/NoPadding", "BC")
+        val cipher = Cipher.getInstance("DESede/ECB/NoPadding")
         val secretKey = SecretKeySpec(key, "DESede")
         cipher.init(Cipher.DECRYPT_MODE, secretKey)
         val decrypt = cipher.doFinal(bytes)
