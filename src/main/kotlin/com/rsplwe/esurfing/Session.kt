@@ -3,7 +3,7 @@ package com.rsplwe.esurfing
 import com.rsplwe.esurfing.cipher.CipherFactory
 import com.rsplwe.esurfing.cipher.CipherInterface
 import org.apache.log4j.Logger
-import java.lang.IllegalArgumentException
+import java.io.File
 
 object Session {
 
@@ -22,44 +22,46 @@ object Session {
 
     private fun load(zsm: ByteArray): Boolean {
         if (zsm.size < 4) {
+            logger.error("Invalid zsm header")
             return false
         }
-        // val header = zsm.sliceArray(0 until 3)
+        val header = zsm.sliceArray(0 until 3)
         val keyLen = zsm[3]
         var pos = 4
         if (pos + keyLen > zsm.size) {
+            logger.error("Invalid key length")
             return false
         }
-        // val key = zsm.sliceArray(pos until pos + keyLen)
+        val key = zsm.sliceArray(pos until pos + keyLen)
         pos += keyLen
-
         if (pos >= zsm.size) {
+            logger.error("Invalid algo id length")
             return false
         }
         val algoIdLen = zsm[pos]
         pos += 1
         if (pos + algoIdLen > zsm.size) {
+            logger.error("Invalid algo id")
             return false
         }
-        val algoId = zsm.sliceArray(pos until pos + algoIdLen).decodeToString()
-        pos += algoIdLen
 
         try {
+            val algoId = zsm.sliceArray(pos until pos + algoIdLen).decodeToString()
             cipher = CipherFactory.getInstance(algoId)
-        } catch (e: IllegalArgumentException) {
+            States.algoId = algoId
+            logger.info("Type: $header")
+            logger.info("Algo Id: $algoId")
+            logger.info("Key: $key")
+        } catch (e: Throwable) {
             logger.error(e.message)
+            saveBytesToFile("algo_dump", "${System.currentTimeMillis()}.bin", zsm)
             return false
         }
-        States.algoId = algoId
         return true
     }
 
     fun decrypt(hex: String): String {
         return cipher.decrypt(hex)
-    }
-
-    fun getAlgoId(): String {
-        return States.algoId
     }
 
     fun encrypt(text: String): String {
@@ -68,5 +70,15 @@ object Session {
 
     fun free() {
         initialized = false
+    }
+
+    private fun saveBytesToFile(dirPath: String, fileName: String, data: ByteArray) {
+        val dir = File(dirPath)
+        if (!dir.exists()) {
+            dir.mkdirs()
+        }
+        val file = File(dir, fileName)
+        file.writeBytes(data)
+        logger.info("save algo in: ${file.absolutePath}")
     }
 }
