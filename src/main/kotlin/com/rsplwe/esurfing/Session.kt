@@ -25,14 +25,14 @@ object Session {
             logger.error("Invalid zsm header")
             return false
         }
-        val header = zsm.sliceArray(0 until 3)
+        val header = zsm.sliceArray(0 until 3).decodeToString()
         val keyLen = zsm[3]
         var pos = 4
         if (pos + keyLen > zsm.size) {
             logger.error("Invalid key length")
             return false
         }
-        val key = zsm.sliceArray(pos until pos + keyLen)
+        val key = zsm.sliceArray(pos until pos + keyLen).decodeToString()
         pos += keyLen
         if (pos >= zsm.size) {
             logger.error("Invalid algo id length")
@@ -44,9 +44,8 @@ object Session {
             logger.error("Invalid algo id")
             return false
         }
-
+        val algoId = zsm.sliceArray(pos until pos + algoIdLen).decodeToString()
         try {
-            val algoId = zsm.sliceArray(pos until pos + algoIdLen).decodeToString()
             cipher = CipherFactory.getInstance(algoId)
             States.algoId = algoId
             logger.info("Type: $header")
@@ -54,7 +53,7 @@ object Session {
             logger.info("Key: $key")
         } catch (e: Throwable) {
             logger.error(e.message)
-            saveBytesToFile("algo_dump", "${System.currentTimeMillis()}.bin", zsm)
+            saveBytesToFile("algo_dump_${System.currentTimeMillis()}.bin", zsm)
             return false
         }
         return true
@@ -72,12 +71,8 @@ object Session {
         initialized = false
     }
 
-    private fun saveBytesToFile(dirPath: String, fileName: String, data: ByteArray) {
-        val dir = File(dirPath)
-        if (!dir.exists()) {
-            dir.mkdirs()
-        }
-        val file = File(dir, fileName)
+    private fun saveBytesToFile(fileName: String, data: ByteArray) {
+        val file = File(fileName)
         file.writeBytes(data)
         logger.info("save algo in: ${file.absolutePath}")
     }
