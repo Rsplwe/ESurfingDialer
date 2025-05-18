@@ -46,18 +46,8 @@ class RedirectInterceptor : Interceptor {
 
             val location = response.header("Location") ?: break
 
-            val prepare = request.newBuilder().url(location)
-            if (States.schoolId.isNotEmpty()) {
-                request.header("CDC-SchoolId") ?: prepare.addHeader("CDC-SchoolId", States.schoolId)
-            }
-            if (States.domain.isNotEmpty()) {
-                request.header("CDC-Domain") ?: prepare.addHeader("CDC-Domain", States.domain)
-            }
-            if (States.area.isNotEmpty()) {
-                request.header("CDC-Area") ?: prepare.addHeader("CDC-Area", States.area)
-            }
             response.close()
-            request = prepare.build()
+            request = request.newBuilder().url(location).build()
             response = chain.proceed(request)
         }
         return response
@@ -92,6 +82,15 @@ fun post(url: String, data: String, extraHeaders: HashMap<String, String> = Hash
 
     extraHeaders.forEach {
         request.addHeader(it.key, it.value)
+    }
+    if (States.schoolId.isNotEmpty()) {
+        request.addHeader("CDC-SchoolId", States.schoolId)
+    }
+    if (States.domain.isNotEmpty()) {
+        request.addHeader("CDC-Domain", States.domain)
+    }
+    if (States.area.isNotEmpty()) {
+        request.addHeader("CDC-Area", States.area)
     }
 
     return try {

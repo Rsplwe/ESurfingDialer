@@ -62,6 +62,8 @@ class Client(private val options: Options) {
     private fun authorization() {
         val code = options.smsCode.ifBlank { checkSMSVerify() }
         println("SMS Code is: $code")
+
+        States.refreshStates()
         initSession()
 
         if (!Session.isInitialized()){

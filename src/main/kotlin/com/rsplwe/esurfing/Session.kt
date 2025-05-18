@@ -74,6 +74,6 @@ object Session {
     private fun saveBytesToFile(fileName: String, data: ByteArray) {
         val file = File(fileName)
         file.writeBytes(data)
-        logger.info("save algo in: ${file.absolutePath}")
+        logger.info("Please submit issue to https://github.com/Rsplwe/ESurfingDialer/issues and attach the file ${file.absolutePath}")
     }
 }
