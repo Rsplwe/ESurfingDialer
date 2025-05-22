@@ -21,31 +21,32 @@ object Session {
     }
 
     private fun load(zsm: ByteArray): Boolean {
-        if (zsm.size < 4) {
-            logger.error("Invalid zsm header")
-            return false
-        }
-        val header = zsm.sliceArray(0 until 3).decodeToString()
-        val keyLen = zsm[3]
-        var pos = 4
-        if (pos + keyLen > zsm.size) {
-            logger.error("Invalid key length")
-            return false
-        }
-        val key = zsm.sliceArray(pos until pos + keyLen).decodeToString()
-        pos += keyLen
-        if (pos >= zsm.size) {
-            logger.error("Invalid algo id length")
-            return false
-        }
-        val algoIdLen = zsm[pos]
-        pos += 1
-        if (pos + algoIdLen > zsm.size) {
-            logger.error("Invalid algo id")
-            return false
-        }
-        val algoId = zsm.sliceArray(pos until pos + algoIdLen).decodeToString()
         try {
+            if (zsm.size < 4) {
+                logger.error("Invalid zsm header")
+                return false
+            }
+            val header = zsm.sliceArray(0 until 3).decodeToString()
+            val keyLen = zsm[3]
+            var pos = 4
+            if (pos + keyLen > zsm.size) {
+                logger.error("Invalid key length")
+                return false
+            }
+            val key = zsm.sliceArray(pos until pos + keyLen).decodeToString()
+            pos += keyLen
+            if (pos >= zsm.size) {
+                logger.error("Invalid algo id length")
+                return false
+            }
+            val algoIdLen = zsm[pos]
+            pos += 1
+            if (pos + algoIdLen > zsm.size) {
+                logger.error("Invalid algo id")
+                return false
+            }
+            val algoId = zsm.sliceArray(pos until pos + algoIdLen).decodeToString()
+
             cipher = CipherFactory.getInstance(algoId)
             States.algoId = algoId
             logger.info("Type: $header")
